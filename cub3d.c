@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   cub3d.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/11/19 17:50:57 by kmorimot          #+#    #+#             */
+/*   Updated: 2020/11/19 17:50:59 by kmorimot         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "cub3d.h"
 
 void	ft_get_win(t_all *all, char **line)
@@ -242,15 +254,15 @@ void	ft_parse_map(t_all *all, char **line)
 	{
 		if ((*line)[j] == 'N' || (*line)[j] == 'S' || (*line)[j] == 'C' || (*line)[j] == 'S')
 		{
-			if (all->posi.posiflag == 1)
+			if (all->start_point.flag == 1)
 			{
 				ft_putstr_fd("Error\n", 1);
 				exit(0);
 			}
-			all->posi.dir = (*line)[j];
-			all->posi.posiflag = 1;
-			all->posi.posix = i + 1;
-			all->posi.posiy = j + 1;
+			all->start_point.dir = (*line)[j];
+			all->start_point.flag = 1;
+			all->start_point.y = i + 1;
+			all->start_point.x = j + 1;
 			all->map.map[i + 1][j + 1] = 'n';
 		}
 		else if ((*line)[j] == ' ')
@@ -277,6 +289,8 @@ void	ft_putmap(t_all *all)
             	printf("\x1b[41m%c\x1b[m", all->map.map[i][j]);
 			else if (all->map.map[i][j] == 'x')
             	printf("\x1b[34m%c\033[m", all->map.map[i][j]);
+			else if (all->map.map[i][j] == 'o')
+            	printf("\x1b[35m%c\033[m", all->map.map[i][j]);
 			else
             	printf("%c", all->map.map[i][j]);
 			j++;
@@ -284,7 +298,7 @@ void	ft_putmap(t_all *all)
         printf("\n");
 		i++;
 	}
-
+    printf("\n");
 }
 
 void	ft_parse_line(t_all *all, char **line)
@@ -354,8 +368,8 @@ void	ft_init_all(t_all *all)
 	all->path_tex.east = NULL;
 	all->path_tex.sprite = NULL;
 
-	// position
-	all->posi.posiflag = 0;
+	// start_point
+	all->start_point.flag = 0;
 }
 
 void	ft_init_map(t_all *all)
@@ -379,6 +393,33 @@ void	ft_init_map(t_all *all)
 	}
 }
 
+void	ft_flood_fill_recursion(t_all *all, int x, int y)
+{
+	if (x < 0 || y < 0)
+		return ;
+	if (x > MAP_SIZE_X - 1 || y > MAP_SIZE_Y - 1)
+		return ;
+	if (all->map.map[y][x] != '0' && all->map.map[y][x] != 'n' && all->map.map[y][x] != '1' && all->map.map[y][x] != '2' && all->map.map[y][x] != 'o')
+	{
+		ft_putmap(all);
+		ft_putstr_fd("Error\n", 1);
+		exit(0);
+	}
+	if (all->map.map[y][x] != '0' && all->map.map[y][x] != 'n' )
+		return ;
+	all->map.map[y][x] = 'o';
+	ft_flood_fill_recursion(all, x + 1, y);
+	ft_flood_fill_recursion(all, x - 1, y);
+	ft_flood_fill_recursion(all, x, y + 1);
+	ft_flood_fill_recursion(all, x, y - 1);
+}
+
+void	ft_flood_fill(t_all *all)
+{
+	ft_flood_fill_recursion(all, all->start_point.x, all->start_point.y);
+	ft_putmap(all);
+}
+
 int main(int argc, char **argv)
 {
 	t_all		all;
@@ -397,6 +438,7 @@ int main(int argc, char **argv)
 		exit(0);
 	}
 	ft_read_map(&all, fd);
+	ft_flood_fill(&all);
 	close(fd);
 	return (0);
 }
