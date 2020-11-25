@@ -60,20 +60,18 @@ void	calc(t_all *all)
 	x = 0;
 	while (x < WIDTH)
 	{
-		all->ray.cameraX = 2 * x / (double)WIDTH - 1;
-		all->ray.raydirX = all->ray.dirX + all->ray.planeX * all->ray.cameraX;
-		all->ray.raydirY = all->ray.dirY + all->ray.planeY * all->ray.cameraX;
+		all->ray.cameraX = 2 * x / (double)WIDTH - 1;//現在のx座標が表すカメラ平面上のx座標
+		all->ray.raydirX = all->ray.dirX + all->ray.planeX * all->ray.cameraX;//光線の方向ベクトル
+		all->ray.raydirY = all->ray.dirY + all->ray.planeY * all->ray.cameraX;//光線の方向ベクトル
 		
-		all->ray.mapX = (int)all->ray.posX;
-		all->ray.mapY = (int)all->ray.posY;
-		
+		all->ray.mapX = (int)all->ray.posX;//mapのどこにいるか
+		all->ray.mapY = (int)all->ray.posY;//mapのどこにいるか
 		 //length of ray from one x or y-side to next x or y-side
 		all->ray.deltadistX = fabs(1 / all->ray.raydirX);
 		all->ray.deltadistY = fabs(1 / all->ray.raydirY);
-		
-		all->ray.hit = 0; //was there a wall hit?
-
-		if (all->ray.raydirX < 0)
+		all->ray.hit = 0; //壁に当たったか？初期化
+		//stepとsidedistの初期値を求める。
+		if (all->ray.raydirX < 0)//raydirX<0の時stepX=-1,sidedistX=(mapX+1.0-posX)*deltadistX
 		{
 			all->ray.stepX = -1;
 			all->ray.sidedistX = (all->ray.posX - all->ray.mapX) * all->ray.deltadistX;
@@ -93,30 +91,30 @@ void	calc(t_all *all)
 			all->ray.stepY = 1;
 			all->ray.sidedistY = (all->ray.mapY + 1.0 - all->ray.posY) * all->ray.deltadistY;
 		}
-
 		while (all->ray.hit == 0)
 		{
 			//jump to next map square, OR in x-direction, OR in y-direction
+			//DDAアルゴリズムにより1マスずつ壁があるか見ていく
 			if (all->ray.sidedistX < all->ray.sidedistY)
 			{
 				all->ray.sidedistX += all->ray.deltadistX;
 				all->ray.mapX += all->ray.stepX;
-				all->ray.side = 0;
+				all->ray.side = 0;//x面でヒットした時は0
 			}
 			else
 			{
 				all->ray.sidedistY += all->ray.deltadistY;
 				all->ray.mapY += all->ray.stepY;
-				all->ray.side = 1;
+				all->ray.side = 1;//y面でヒットした時は1
 			}
 			//Check if ray has hit a wall
-			if (worldmap[all->ray.mapX][all->ray.mapY] > 0)
-				all->ray.hit = 1;
+			if (worldmap[all->ray.mapX][all->ray.mapY] > 0)//0より大きいと壁
+				all->ray.hit = 1;//壁に当たったフラグ
 		}
 		if (all->ray.side == 0)
-			all->ray.perpwalldist = (all->ray.mapX - all->ray.posX + (1 - all->ray.stepX) / 2) / all->ray.raydirX;
+			all->ray.perpwalldist = (all->ray.mapX - all->ray.posX + (1 - all->ray.stepX) / 2) / all->ray.raydirX;//カメラ平面から距離
 		else
-			all->ray.perpwalldist = (all->ray.mapY - all->ray.posY + (1 - all->ray.stepY) / 2) / all->ray.raydirY;
+			all->ray.perpwalldist = (all->ray.mapY - all->ray.posY + (1 - all->ray.stepY) / 2) / all->ray.raydirY;//カメラ平面からの距離
 
 		//Calculate height of line to draw on screen
 		all->ray.lineheight = (int)(HEIGHT / all->ray.perpwalldist);
@@ -124,10 +122,10 @@ void	calc(t_all *all)
 		//calculate lowest and highest pixel to fill in current stripe
 		all->ray.drawstart = - all->ray.lineheight / 2 + HEIGHT / 2;
 		if(all->ray.drawstart < 0)
-			all->ray.drawstart = 0;
+			all->ray.drawstart = 0;//画面外は0
 		all->ray.drawend = all->ray.lineheight / 2 + HEIGHT / 2;
 		if(all->ray.drawend >= HEIGHT)
-			all->ray.drawend = HEIGHT - 1;
+			all->ray.drawend = HEIGHT - 1;//画面外はHEIGHT-1
 
 		if (worldmap[all->ray.mapY][all->ray.mapX] == 1)
 			all->ray.color = 0xFF0000;

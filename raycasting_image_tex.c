@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   raycasting_tex.c                                   :+:      :+:    :+:   */
+/*   raycasting_image_tex.c                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/19 17:51:47 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/11/25 01:29:04 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/11/26 00:05:25 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,30 +16,30 @@
 
 int	worldmap[MAP_WIDTH][MAP_HEIGHT] =
 						{
-							{4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,7,7,7},
-							{4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
-							{4,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
-							{4,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7},
-							{4,0,3,0,0,0,0,0,0,0,0,0,0,0,0,0,7,0,0,0,0,0,0,7},
-							{4,0,4,0,0,0,0,5,5,5,5,5,5,5,5,5,7,7,0,7,7,7,7,7},
-							{4,0,5,0,0,0,0,5,0,5,0,5,0,5,0,5,7,0,0,0,7,7,7,1},
-							{4,0,6,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
-							{4,0,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,7,7,1},
-							{4,0,8,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,0,0,0,8},
-							{4,0,0,0,0,0,0,5,0,0,0,0,0,0,0,5,7,0,0,0,7,7,7,1},
-							{4,0,0,0,0,0,0,5,5,5,5,0,5,5,5,5,7,7,7,7,7,7,7,1},
-							{6,6,6,6,6,6,6,6,6,6,6,0,6,6,6,6,6,6,6,6,6,6,6,6},
-							{8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4},
-							{6,6,6,6,6,6,0,6,6,6,6,0,6,6,6,6,6,6,6,6,6,6,6,6},
-							{4,4,4,4,4,4,0,4,4,4,6,0,6,2,2,2,2,2,2,2,3,3,3,3},
-							{4,0,0,0,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,0,0,0,2},
-							{4,0,0,0,0,0,0,0,0,0,0,0,6,2,0,0,5,0,0,2,0,0,0,2},
-							{4,0,0,0,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,2,0,2,2},
-							{4,0,6,0,6,0,0,0,0,4,6,0,0,0,0,0,5,0,0,0,0,0,0,2},
-							{4,0,0,5,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,2,0,2,2},
-							{4,0,6,0,6,0,0,0,0,4,6,0,6,2,0,0,5,0,0,2,0,0,0,2},
-							{4,0,0,0,0,0,0,0,0,4,6,0,6,2,0,0,0,0,0,2,0,0,0,2},
-							{4,4,4,4,4,4,4,4,4,4,1,1,1,2,2,2,2,2,2,3,3,3,3,3}
+							{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+							{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+							{1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+							{1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+							{1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,1},
+							{1,0,1,0,0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1},
+							{1,0,1,0,0,0,0,1,0,1,0,1,0,1,0,1,1,0,0,0,1,1,1,1},
+							{1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1},
+							{1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1},
+							{1,0,1,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1,0,0,0,0,0,1},
+							{1,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,0,1,1,1,1},
+							{1,0,0,0,0,0,0,1,1,1,1,0,2,1,1,1,1,1,1,1,1,1,1,1},
+							{1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1},
+							{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},
+							{1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1},
+							{1,1,1,1,1,1,0,1,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,1},
+							{1,0,0,0,0,0,0,0,0,1,1,0,1,1,0,0,0,0,0,1,0,0,0,1},
+							{1,0,0,0,0,0,0,0,0,4,4,4,4,4,0,0,1,0,0,1,0,0,0,1},
+							{1,0,0,0,0,0,0,0,0,3,0,0,0,1,0,0,0,0,0,1,1,0,1,1},
+							{1,0,1,0,1,0,0,0,0,3,0,1,0,1,0,0,1,0,0,0,0,0,0,1},
+							{1,0,0,1,0,0,0,0,0,3,0,0,0,1,0,0,0,0,0,1,1,0,1,1},
+							{1,0,1,0,1,0,0,0,0,3,0,0,0,1,0,0,1,0,0,1,0,0,0,1},
+							{1,0,0,0,0,0,0,0,0,3,0,0,0,1,0,0,0,0,0,1,0,0,0,1},
+							{1,1,1,1,1,1,1,1,1,2,2,2,2,2,1,1,1,1,1,1,1,1,1,1}
 						};
 
 void	draw(t_all *all)
@@ -144,6 +144,7 @@ void	calc(t_all *all)
 		//テクスチャ0が存在するが、マップタイル0は空のスペースを表すため、テクスチャがないから。
 		//worldmap[mapX][mapY]の値が1の場合texnumが0になって、テクスチャの種類の中で一番最初のテクスチャを使用できるようになる。
 		all->tex.texnum = worldmap[all->ray.mapX][all->ray.mapY];
+		
 		//wallXは、壁の整数座標だけでなく、壁がヒットした正確な値を表す。
 		//これは、使用する必要のあるテクスチャのx座標を知るために必要。
 		//これは、最初に正確なx座標またはy座標を計算し、
@@ -154,9 +155,9 @@ void	calc(t_all *all)
 			all->tex.wallX = all->ray.posY + all->ray.perpwalldist * all->ray.raydirY;
 		else
 			all->tex.wallX = all->ray.posX + all->ray.perpwalldist * all->ray.raydirX;
-		all->tex.wallX -= floor(all->tex.wallX);
+		all->tex.wallX = all->tex.wallX - (int)all->tex.wallX;
 
-		// x coordinate on the texture
+		//テクスチャのx座標
 		all->tex.texX = (int)(all->tex.wallX * (double)TEX_WIDTH);
 		if (all->ray.side == 0 && all->ray.raydirX > 0)
 			all->tex.texX = TEX_WIDTH - all->tex.texX - 1;
@@ -189,7 +190,6 @@ int	main_loop(t_all *all)
 	calc(all);
 	draw(all);
 	// mlx_put_image_to_window(info->mlx, info->win, &info->img, 0, 0);
-
 	return (0);
 }
 
@@ -237,6 +237,40 @@ int	key_press(int key, t_all *all)
 	return (0);
 }
 
+void	load_image(t_all *all, int *texture, char *path)
+{
+	int		x;
+	int		y;
+
+	all->ray.img = mlx_xpm_file_to_image(all->ray.mlx, path, &all->ray.img_width, &all->ray.img_height);
+	all->ray.data = (int *)mlx_get_data_addr(all->ray.img, &all->ray.bpp, &all->ray.size_l, &all->ray.endian);
+	
+	y = 0;
+	while (y < all->ray.img_height)
+	{
+		x = 0;
+		while (x < all->ray.img_width)
+		{
+			texture[all->ray.img_width * y + x] = all->ray.data[all->ray.img_width * y + x];
+			x++;
+		}
+		y++;
+	}
+	mlx_destroy_image(all->ray.mlx, all->ray.img);
+}
+
+void	load_texture(t_all *all)
+{
+	load_image(all, all->tex.texture[0], "textures/eagle.xpm");
+	load_image(all, all->tex.texture[1], "textures/redbrick.xpm");
+	load_image(all, all->tex.texture[2], "textures/purplestone.xpm");
+	load_image(all, all->tex.texture[3], "textures/greystone.xpm");
+	load_image(all, all->tex.texture[4], "textures/bluestone.xpm");
+	load_image(all, all->tex.texture[5], "textures/mossy.xpm");
+	load_image(all, all->tex.texture[6], "textures/wood.xpm");
+	load_image(all, all->tex.texture[7], "textures/colorstone.xpm");
+}
+
 int	main(void)
 {
 	t_all	all;
@@ -252,16 +286,21 @@ int	main(void)
 	all.ray.dirY = 0.0;
 	all.ray.planeX = 0.0;
 	all.ray.planeY = 0.66;
-	all.tex.buf = (int **)malloc(sizeof(int *) * HEIGHT);
-	i = 0;
-	while (i < HEIGHT)
-		all.tex.buf[i++] = (int *)malloc(sizeof(int) * WIDTH);
 	i = 0;
 	while (i < HEIGHT)
 	{
 		j = 0;
 		while (j < WIDTH)
 			all.tex.buf[i][j++] = 0;
+		i++;
+	}
+	if (!(all.tex.texture = (int **)malloc(sizeof(int *) * 8)))
+		return (-1);
+	i = 0;
+	while (i < 8)
+	{
+		if (!(all.tex.texture[i] = (int *)malloc(sizeof(int) * (TEX_HEIGHT * TEX_WIDTH))))
+			return (-1);
 		i++;
 	}
 	i = 0;
@@ -272,28 +311,8 @@ int	main(void)
 			all.tex.texture[i][j++] = 0;
 		i++;
 	}
-	x = 0;
-	while (x < TEX_WIDTH)
-	{
-		y = 0;
-		while (y < TEX_HEIGHT)
-		{
-			//テクスチャサイズのすべてのピクセルは、テクスチャの高さと幅に二重ループを通過しながら、テクスチャ番号ごとに、x、yの値で作られた特定の値を持つようになる。
-			all.tex.xorcolor = (x * 256 / TEX_WIDTH) ^ (y * 256 / TEX_HEIGHT);
-			all.tex.ycolor = y * 256 / TEX_HEIGHT;
-			all.tex.xycolor = y * 128 / TEX_HEIGHT + x * 128 / TEX_WIDTH;
-			all.tex.texture[0][TEX_WIDTH * y + x] = 65536 * 254 * (x != y && x != TEX_WIDTH - y); //flat red texture with black cross
-			all.tex.texture[1][TEX_WIDTH * y + x] = all.tex.xycolor + 256 * all.tex.xycolor + 65536 * all.tex.xycolor; //sloped greyscale
-			all.tex.texture[2][TEX_WIDTH * y + x] = 256 * all.tex.xycolor + 65536 * all.tex.xycolor; //sloped yellow gradient
-			all.tex.texture[3][TEX_WIDTH * y + x] = all.tex.xorcolor + 256 * all.tex.xorcolor + 65536 * all.tex.xorcolor; //xor greyscale
-			all.tex.texture[4][TEX_WIDTH * y + x] = 256 * all.tex.xorcolor; //xor green
-			all.tex.texture[5][TEX_WIDTH * y + x] = 65536 * 192 * (x % 16 && y % 16); //red bricks
-			all.tex.texture[6][TEX_WIDTH * y + x] = 65536 * all.tex.ycolor; //red gradient
-			all.tex.texture[7][TEX_WIDTH * y + x] = 128 + 256 * 128 + 65536 * 128; //flat grey texture
-			y++;
-		}
-		x++;
-	}
+
+	load_texture(&all);
 
 	all.ray.movespeed = 0.05;
 	all.ray.rotspeed = 0.05;

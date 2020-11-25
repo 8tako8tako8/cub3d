@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/19 17:51:13 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/11/21 15:04:46 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/11/25 20:12:48 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,12 @@
 
 #define X_EVENT_KEY_PRESS	2
 #define X_EVENT_KEY_EXIT	17
-#define TEX_WIDTH 64
-#define TEX_HEIGHT 64
+#define TEX_WIDTH 64//テクスチャのテクセル(texel)の幅
+#define TEX_HEIGHT 64//テクスチャのテクセル(texel)の高さ
 #define MAP_WIDTH 24
 #define MAP_HEIGHT 24
-#define WIDTH 1920
-#define HEIGHT 1080
+#define WIDTH 640
+#define HEIGHT 480
 
 typedef struct		s_cubflag
 {
@@ -110,6 +110,8 @@ typedef struct		s_ray
 	int				size_l;
 	int				bpp;
 	int				endian;
+	int				img_width;
+	int				img_height;
 
 	double			posX;
 	double			posY;
@@ -149,17 +151,19 @@ typedef struct		s_ray
 
 typedef struct		s_tex
 {
-	int				**buf;
-	int				texture[8][TEX_HEIGHT * TEX_WIDTH];
+	//int				**buf;
+	int				buf[HEIGHT][WIDTH];
+//	int				texture[8][TEX_HEIGHT * TEX_WIDTH];
+	int				**texture;
 	int				texnum;
 	double			wallX;
 	int				texX;
 	int				texY;
 	double			step;
 	double			texpos;
-	int				xorcolor;
-	int				ycolor;
-	int				xycolor;
+//	int				xorcolor;
+//	int				ycolor;
+//	int				xycolor;
 }					t_tex;
 
 typedef struct		s_all
