@@ -1,129 +1,180 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cub3d.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/19 17:51:13 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/11/25 20:12:48 by kmorimot         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#ifndef CUB3D_H
-# define CUB3D_H
-
-#include "minilibx_mms_20200219/mlx.h"
+# include "minilibx_mms_20200219/mlx.h"
 #include "key_macos.h"
-# include "get_next_line.h"
-# include "libft/libft.h"
-# include "debug.h"
-# include <fcntl.h>//open
-# include <unistd.h>//read,close
-# include <stdlib.h>//exit
-# include <stdio.h>
-#include <string.h>
 #include <math.h>
-# define MAP_SIZE_X 40
-# define MAP_SIZE_Y 20
-
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #define X_EVENT_KEY_PRESS	2
+# define X_EVENT_KEY_RELEASE	3
 #define X_EVENT_KEY_EXIT	17
-#define TEX_WIDTH 64//テクスチャのテクセル(texel)の幅
-#define TEX_HEIGHT 64//テクスチャのテクセル(texel)の高さ
-#define MAP_WIDTH 24
-#define MAP_HEIGHT 24
-#define WIDTH 640
-#define HEIGHT 480
+#define texWidth 64
+#define texHeight 64
+#define mapWidth 24
+#define mapHeight 24
+#define width 640
+#define height 480
+#define numSprites 19
+#define uDiv 1
+#define vDiv 1
+#define vMove 0.0
 
-typedef struct		s_cubflag
+typedef struct	s_img
 {
-	int				r;
-	int				no;
-	int				so;
-	int				we;
-	int				ea;
-	int				s;
-	int				f;
-	int				c;
-}					t_cubflag;
+	void	*img;
+	int		*data;
 
-typedef struct		s_win
-{
-	int				x;
-	int				y;
-}					t_win;
+	int		size_l;
+	int		bpp;
+	int		endian;
+	int		img_width;
+	int		img_height;
+}				t_img;
 
-typedef struct		s_path_tex
+struct	Sprite
 {
-	char			*north;
-	char			*south;
-	char			*west;
-	char			*east;
-	char			*sprite;
-}					t_path_tex;
+	double		x;
+	double		y;
+	int			texture;
+};
+
+struct Sprite	sprite[numSprites] =
+{
+	{20.5, 11.5, 10}, //green light in front of playerstart
+	//green lights in every room
+	{18.5,4.5, 10},
+	{10.0,4.5, 10},
+	{10.0,12.5,10},
+	{3.5, 6.5, 10},
+	{3.5, 20.5,10},
+	{3.5, 14.5,10},
+	{14.5,20.5,10},
+
+	//row of pillars in front of wall: fisheye test
+	{18.5, 10.5, 9},
+	{18.5, 11.5, 9},
+	{18.5, 12.5, 9},
+
+	//some barrels around the map
+	{21.5, 1.5, 8},
+	{15.5, 1.5, 8},
+	{16.0, 1.8, 8},
+	{16.2, 1.2, 8},
+	{3.5,  2.5, 8},
+	{9.5, 15.5, 8},
+	{10.0, 15.1,8},
+	{10.5, 15.8,8},
+};
+
+int		spriteOrder[numSprites];
+double	spriteDistance[numSprites];
+
+typedef struct	s_info
+{
+	double posX;
+	double posY;
+	double dirX;
+	double dirY;
+	double planeX;
+	double planeY;
+	void	*mlx;
+	void	*win;
+	int		key_a;
+	int		key_w;
+	int		key_s;
+	int		key_d;
+	int		key_esc;
+	int		buf[height][width];
+	double	zBuffer[width];
+	int		**texture;
+	double	moveSpeed;
+	double	rotSpeed;
+
+    //floor
+/* 	float			raydirX0;
+	float			raydirY0;
+	float			raydirX1;
+	float			raydirY1;
+	int				p1;
+	float			posZ;
+	float			rowdistance;
+	float			floorstepX;
+	float			floorstepY;
+	float			floorX;
+	float			floorY;
+	int				cellX;
+	int				cellY;
+	int				tx;
+	int				ty;
+	int				floortexture;
+	int				ceilingtexture;
+	int				color1;//1
+	double			floorXwall;
+	double			floorYwall;
+	double			distwall;
+	double			distplayer;
+	double			currentdist; */
+
+    //ray
+/* 	double			cameraX;
+	double			raydirX;
+	double			raydirY;
+	int				mapX;
+	int				mapY;
+	double			sidedistX;
+	double			sidedistY;
+	double			deltadistX;
+	double			deltadistY;
+	double			perpwalldist;
+	int				stepX;
+	int				stepY;
+	int				hit;
+	int				side;
+	int				lineheight;
+	int				drawstart;
+	int				drawend;
+	double			wallX;
+	double			olddirX;
+	double			oldplaneX; */
+
+    // tex
+/* 	int				texnum;
+	int				texX;
+	double			step;
+	double			texpos;
+	int				texY;
+	int				color2; */
+}				t_info;
 
 typedef struct		s_floor
 {
-    int			    r;
-    int			    g;
-    int			    b;
+	float			raydirX0;
+	float			raydirY0;
+	float			raydirX1;
+	float			raydirY1;
+	int				p;//1
+	float			posZ;
+	float			rowdistance;
+	float			floorstepX;
+	float			floorstepY;
+	float			floorX;
+	float			floorY;
+	int				cellX;
+	int				cellY;
+	int				tx;
+	int				ty;
+	int				floortexture;
+	int				ceilingtexture;
+	int				color1;//1
+	int				color2;//1
+	double			floorXwall;
+	double			floorYwall;
+	double			distwall;
+	double			distplayer;
+	double			currentdist;
 }					t_floor;
-
-typedef struct		s_ceiling
-{
-    int			    r;
-    int			    g;
-    int			    b;
-}					t_ceiling;
-
-/* typedef struct		s_map_size
-{
-    int			    linelen;
-    int			    numline;
-}					t_map_size; */
-
-typedef struct		s_map
-{
-    char            map[MAP_SIZE_Y][MAP_SIZE_X];
-    //int             numline;
-}					t_map;
-
-typedef struct		s_start_point
-{
-    char            dir;
-    int             flag;
-    int             x;
-    int             y;
-}					t_start_point;
-
-typedef struct		s_point
-{
-	int				x;
-	int				y;
-}					t_point;
 
 typedef struct		s_ray
 {
-	void			*img;
-	int				*data;
-	int				size_l;
-	int				bpp;
-	int				endian;
-	int				img_width;
-	int				img_height;
-
-	double			posX;
-	double			posY;
-	double			dirX;
-	double			dirY;
-	double			planeX;
-	double			planeY;
-	void			*mlx;
-	void			*win;
-	double			movespeed;
-	double			rotspeed;
-	
 	double			cameraX;
 	double			raydirX;
 	double			raydirY;
@@ -138,52 +189,62 @@ typedef struct		s_ray
 	int				stepY;
 	int				hit;
 	int				side;
-
 	int				lineheight;
 	int				drawstart;
 	int				drawend;
-	int				color;
-
+	double			wallX;
 	double			olddirX;
 	double			oldplaneX;
-	
+
 }					t_ray;
 
 typedef struct		s_tex
 {
-	//int				**buf;
-	int				buf[HEIGHT][WIDTH];
-//	int				texture[8][TEX_HEIGHT * TEX_WIDTH];
-	int				**texture;
 	int				texnum;
-	double			wallX;
-	int				texX;
-	int				texY;
+	int				texX1;//1
 	double			step;
 	double			texpos;
-//	int				xorcolor;
-//	int				ycolor;
-//	int				xycolor;
+	int				texY1;//1
+	int				color2;//2
 }					t_tex;
+
+typedef struct		s_pair
+{
+	double	first;
+	int		second;
+}					t_pair;
+
+typedef struct		s_spr
+{
+    double          spriteX;
+    double          spriteY;
+    double          invDet;
+	double          transformX;
+	double          transformY;
+	int             spriteScreenX;
+    int             vMoveScreen;
+    int             spriteHeight;
+    int             spriteWidth;
+    int             drawStartX;
+    int             drawStartY;
+    int             drawEndX;
+    int             drawEndY;
+    int             texX;
+    int             texY;
+    int             d;
+    int             color3;
+
+}					t_spr;
 
 typedef struct		s_all
 {
-	t_cubflag       cubflag;
-	t_win           win;
-	t_path_tex      path_tex;
-	t_floor		    floor;
-	t_ceiling		ceiling;
- //   t_map_size      map_size;
-    t_map           map;
-    t_start_point   start_point;
-    t_point         point;
+	t_img			img;
+	t_info			info;
+	t_floor			floor;
 	t_ray			ray;
 	t_tex			tex;
+	t_pair			pair;
+    t_spr           spr;
 }					t_all;
 
-void	ft_get_win(t_all *all, char **line);
-void	ft_parse_line_r(t_all *all, char **line);
-void	ft_read_map(t_all *all, int fd);
-void	ft_init_all(t_all *all);
-
-#endif
+void	key_update(t_all *all);
