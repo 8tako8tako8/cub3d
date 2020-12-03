@@ -1,33 +1,97 @@
+#ifndef CUB3D_H
+# define CUB3D_H
+
 # include "minilibx_mms_20200219/mlx.h"
-#include "key_macos.h"
-#include <math.h>
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#define X_EVENT_KEY_PRESS	2
+# include "key_macos.h"
+# include "get_next_line.h"
+# include "libft/libft.h"
+# include "debug.h"
+# include <fcntl.h>//open
+# include <unistd.h>//read,close
+# include <stdlib.h>//exit
+# include <string.h>
+# include <math.h>
+# define X_EVENT_KEY_PRESS	2
 # define X_EVENT_KEY_RELEASE	3
-#define X_EVENT_KEY_EXIT	17
-#define texWidth 64
-#define texHeight 64
-#define mapWidth 24
-#define mapHeight 24
-#define width 640
-#define height 480
-#define numSprites 19
-#define uDiv 1
-#define vDiv 1
-#define vMove 0.0
+# define X_EVENT_KEY_EXIT	17
+# define TEX_WIDTH 64
+# define TEX_HEIGHT 64
+# define MAP_WIDTH 40
+# define MAP_HEIGHT 40
+# define WIN_WIDTH 640
+# define WIN_HEIGHT 480
+# define NUM_SPRITES 3
+# define uDiv 1
+# define vDiv 1
+# define vMove 0.0
+
+typedef struct		s_win_r
+{
+	int				x;
+	int				y;
+}					t_win_r;
+
+typedef struct		s_path_tex
+{
+	char			*north;
+	char			*south;
+	char			*west;
+	char			*east;
+	char			*sprite;
+}					t_path_tex;
+
+typedef struct		s_color_f
+{
+    int			    r;
+    int			    g;
+    int			    b;
+}					t_color_f;
+
+typedef struct		s_color_c
+{
+    int			    r;
+    int			    g;
+    int			    b;
+}					t_color_c;
+
+typedef struct		s_cubflag
+{
+	int				r;
+	int				no;
+	int				so;
+	int				we;
+	int				ea;
+	int				s;
+	int				f;
+	int				c;
+
+}					t_cubflag;
+
+typedef struct		s_map
+{
+    char            map[MAP_HEIGHT][MAP_WIDTH];
+	int				start;
+	int				end;
+
+}					t_map;
+
+typedef struct		s_start_point
+{
+    char            dir;
+    int             flag;
+    int             x;
+    int             y;
+}					t_start_point;
 
 typedef struct	s_img
 {
-	void	*img;
-	int		*data;
-
-	int		size_l;
-	int		bpp;
-	int		endian;
-	int		img_width;
-	int		img_height;
+	void		*img;
+	int			*data;
+	int			size_l;
+	int			bpp;
+	int			endian;
+	int			img_width;
+	int			img_height;
 }				t_img;
 
 struct	Sprite
@@ -37,57 +101,26 @@ struct	Sprite
 	int			texture;
 };
 
-struct Sprite	sprite[numSprites] =
-{
-	{20.5, 11.5, 10}, //green light in front of playerstart
-	//green lights in every room
-	{18.5,4.5, 10},
-	{10.0,4.5, 10},
-	{10.0,12.5,10},
-	{3.5, 6.5, 10},
-	{3.5, 20.5,10},
-	{3.5, 14.5,10},
-	{14.5,20.5,10},
-
-	//row of pillars in front of wall: fisheye test
-	{18.5, 10.5, 9},
-	{18.5, 11.5, 9},
-	{18.5, 12.5, 9},
-
-	//some barrels around the map
-	{21.5, 1.5, 8},
-	{15.5, 1.5, 8},
-	{16.0, 1.8, 8},
-	{16.2, 1.2, 8},
-	{3.5,  2.5, 8},
-	{9.5, 15.5, 8},
-	{10.0, 15.1,8},
-	{10.5, 15.8,8},
-};
-
-int		spriteOrder[numSprites];
-double	spriteDistance[numSprites];
-
 typedef struct	s_info
 {
-	double posX;
-	double posY;
-	double dirX;
-	double dirY;
-	double planeX;
-	double planeY;
-	void	*mlx;
-	void	*win;
-	int		key_a;
-	int		key_w;
-	int		key_s;
-	int		key_d;
-	int		key_esc;
-	int		buf[height][width];
-	double	zBuffer[width];
-	int		**texture;
-	double	moveSpeed;
-	double	rotSpeed;
+	double		posX;
+	double		posY;
+	double		dirX;
+	double		dirY;
+	double		planeX;
+	double		planeY;
+	void		*mlx;
+	void		*win;
+	int			key_a;
+	int			key_w;
+	int			key_s;
+	int			key_d;
+	int			key_esc;
+	int			buf[WIN_HEIGHT][WIN_WIDTH];
+	double		zBuffer[WIN_WIDTH];
+	int			**texture;
+	double		moveSpeed;
+	double		rotSpeed;
 
     //floor
 /* 	float			raydirX0;
@@ -238,6 +271,15 @@ typedef struct		s_spr
 
 typedef struct		s_all
 {
+	int				save;
+	t_win_r			win_r;
+	t_path_tex		path_tex;
+	t_color_f		color_f;
+	t_color_c		color_c;
+	t_cubflag		cubflag;
+	t_map			map;
+	t_start_point	start_point;
+
 	t_img			img;
 	t_info			info;
 	t_floor			floor;
@@ -248,3 +290,5 @@ typedef struct		s_all
 }					t_all;
 
 void	key_update(t_all *all);
+
+#endif

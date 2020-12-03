@@ -19,8 +19,8 @@
 #define X_EVENT_KEY_EXIT	17
 #define TEX_WIDTH 64//テクスチャのテクセル(texel)の幅
 #define TEX_HEIGHT 64//テクスチャのテクセル(texel)の高さ
-#define MAP_WIDTH 24
-#define MAP_HEIGHT 24
+#define MAP_WIDTH 7
+#define MAP_HEIGHT 7
 #define WIDTH 640
 #define HEIGHT 480
 
@@ -130,8 +130,7 @@ typedef struct		s_ray
 	int				lineheight;
 	int				drawstart;
 	int				drawend;
-	int				color1;
-	int				color2;
+	int				color;
 
 	double			olddirX;
 	double			oldplaneX;
@@ -140,19 +139,19 @@ typedef struct		s_ray
 
 typedef struct		s_tex
 {
-	//int				**buf;
-	int				buf[HEIGHT][WIDTH];
-//	int				texture[8][TEX_HEIGHT * TEX_WIDTH];
-	int				**texture;
+	int				**buf;
+	//int				buf[HEIGHT][WIDTH];
+	int				texture[8][TEX_HEIGHT * TEX_WIDTH];
+//	int				**texture;
 	int				texnum;
 	double			wallX;
 	int				texX;
 	int				texY;
 	double			step;
 	double			texpos;
-//	int				xorcolor;
-//	int				ycolor;
-//	int				xycolor;
+	int				xorcolor;
+	int				ycolor;
+	int				xycolor;
 }					t_tex;
 
 typedef struct		s_all
