@@ -1,17 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   raycasting_sprite.c                                :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/07 14:02:36 by kmorimot         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "cub3d.h"
-
 double  ft_decimals(double value)
 {
     double  ret_decimals;
@@ -93,20 +79,6 @@ void	sortSprites(int *order, double *dist, int amount)
 	}
 	free(sprites);
 }
-
-int	worldMap[MAP_WIDTH][MAP_HEIGHT] =
-									{
-										{1,1,1,1,1,1,1,1,1,1},
-										{1,0,1,0,0,0,0,0,0,1},
-										{1,0,2,0,0,0,0,0,0,1},
-										{1,0,0,1,0,0,0,0,0,1},
-										{1,1,0,1,0,0,0,0,0,1},
-										{1,0,1,0,0,0,0,1,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,1,1,1,1,1,1,1,1,1}
-									};
 
 void	draw(t_all *all)
 {
@@ -216,7 +188,7 @@ void	calc(t_all *all)
 				all->ray.side = 1;
 			}
 			//Check if ray has hit a wall
-			if(worldMap[all->ray.mapX][all->ray.mapY] == 1)
+			if(all->map.map[all->ray.mapY][all->ray.mapX] == 1)
 				all->ray.hit = 1;
 		}
 		//Calculate distance of perpendicular ray (Euclidean distance will give fisheye effect!)
@@ -234,21 +206,13 @@ void	calc(t_all *all)
 		if(all->ray.drawend >= WIN_HEIGHT)
 			all->ray.drawend = WIN_HEIGHT - 1;
 		//texturing calculations
-		if (all->ray.side == 0 && all->ray.raydirX < 0 && all->ray.raydirY < 0)
+		if (all->ray.side == 0 && all->ray.raydirX < 0)
 			all->tex.texnum = 0; //1 subtracted from it so that texture 0 can be used!
-		else if (all->ray.side == 1 && all->ray.raydirX < 0 && all->ray.raydirY < 0)
-			all->tex.texnum = 1;
-		else if (all->ray.side == 0 && all->ray.raydirX < 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 0;
-		else if (all->ray.side == 1 && all->ray.raydirX < 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 2;
-		else if (all->ray.side == 0 && all->ray.raydirX >= 0 && all->ray.raydirY < 0)
+		else if (all->ray.side == 0 && all->ray.raydirX >= 0)
 			all->tex.texnum = 3;
-		else if (all->ray.side == 1 && all->ray.raydirX >= 0 && all->ray.raydirY < 0)
+		else if (all->ray.side == 1 && all->ray.raydirY < 0)
 			all->tex.texnum = 1;
-		else if (all->ray.side == 0 && all->ray.raydirX >= 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 3;
-		else
+		else if (all->ray.side == 1 && all->ray.raydirY >= 0)
 			all->tex.texnum = 2;
 
 		//calculate value of wallX
@@ -290,12 +254,7 @@ void	calc(t_all *all)
 	//SPRITE CASTING
 	//sort sprites from far to close
 	//遠いスプライトから順に配列に格納
-	struct Sprite	sprite[NUM_SPRITES] =
-	{
-		{2.5, 2.5, 4}
-//		{3.0, 2.0, 4},
-//		{2.0, 3.0, 4}
-	};
+
 	int		spriteOrder[NUM_SPRITES];
 	double	spriteDistance[NUM_SPRITES];
 	i = 0;
@@ -397,21 +356,21 @@ void	key_update(t_all *all)
 {
 	if (all->info.key_w)
 	{
-		if (!worldMap[(int)(all->info.posX + all->info.dirX * all->info.moveSpeed)][(int)(all->info.posY)])
+		if (!all->map.map[(int)(all->info.posY)][(int)(all->info.posX + all->info.dirX * all->info.moveSpeed)])
 			all->info.posX += all->info.dirX * all->info.moveSpeed;
-		if (!worldMap[(int)(all->info.posX)][(int)(all->info.posY + all->info.dirY * all->info.moveSpeed)])
+		if (!all->map.map[(int)(all->info.posY + all->info.dirY * all->info.moveSpeed)][(int)(all->info.posX)])
 			all->info.posY += all->info.dirY * all->info.moveSpeed;
 	}
 	//move backwards if no wall behind you
 	if (all->info.key_s)
 	{
-		if (!worldMap[(int)(all->info.posX - all->info.dirX * all->info.moveSpeed)][(int)(all->info.posY)])
+		if (!all->map.map[(int)(all->info.posY)][(int)(all->info.posX - all->info.dirX * all->info.moveSpeed)])
 			all->info.posX -= all->info.dirX * all->info.moveSpeed;
-		if (!worldMap[(int)(all->info.posX)][(int)(all->info.posY - all->info.dirY * all->info.moveSpeed)])
+		if (!all->map.map[(int)(all->info.posY - all->info.dirY * all->info.moveSpeed)][(int)(all->info.posX)])
 			all->info.posY -= all->info.dirY * all->info.moveSpeed;
 	}
-	//rotate to the right
-	if (all->info.key_d)
+	//rotate to the left
+	if (all->info.key_a)
 	{
 		//both camera direction and camera plane must be rotated
 		all->ray.olddirX = all->info.dirX;
@@ -421,8 +380,8 @@ void	key_update(t_all *all)
 		all->info.planeX = all->info.planeX * cos(-all->info.rotSpeed) - all->info.planeY * sin(-all->info.rotSpeed);
 		all->info.planeY = all->ray.oldplaneX * sin(-all->info.rotSpeed) + all->info.planeY * cos(-all->info.rotSpeed);
 	}
-	//rotate to the left
-	if (all->info.key_a)
+	//rotate to the right
+	if (all->info.key_d)
 	{
 		//both camera direction and camera plane must be rotated
 		all->ray.olddirX = all->info.dirX;
@@ -489,73 +448,72 @@ void	load_image(t_all *all, int *texture, char *path)
 
 void	load_texture(t_all *all)
 {
-	load_image(all, all->info.texture[0], "textures/eagle.xpm");
-	load_image(all, all->info.texture[1], "textures/redbrick.xpm");
-	load_image(all, all->info.texture[2], "textures/purplestone.xpm");
-	load_image(all, all->info.texture[3], "textures/greystone.xpm");
-	load_image(all, all->info.texture[4], "textures/barrel.xpm");
+	load_image(all, all->info.texture[0], "west/redbrick.xpm");
+	load_image(all, all->info.texture[1], "south/greystone.xpm");
+	load_image(all, all->info.texture[2], "north/eagle.xpm");
+	load_image(all, all->info.texture[3], "east/purplestone.xpm");
+	load_image(all, all->info.texture[4], "sprite/barrel.xpm");
 
 }
 
-int	main(void)
+void	ft_raycasting(t_all *all)
 {
-	t_all	all;
 	int		i;
 	int		j;
 
-	all.info.mlx = mlx_init();
+	all->info.mlx = mlx_init();
 
-	all.info.posX = 5.0;
-	all.info.posY = 5.0;
-	all.info.dirX = -1.0;
-	all.info.dirY = 0.0;
-	all.info.planeX = 0.0;
-	all.info.planeY = 0.66;
-	all.info.key_a = 0;
-	all.info.key_w = 0;
-	all.info.key_s = 0;
-	all.info.key_d = 0;
-	all.info.key_esc = 0;
+	all->info.posX = 2.5;
+	all->info.posY = 2.5;
+	all->info.dirX = 0.0;
+	all->info.dirY = -1.0;
+	all->info.planeX = 0.66;
+	all->info.planeY = 0.0;
+	all->info.key_a = 0;
+	all->info.key_w = 0;
+	all->info.key_s = 0;
+	all->info.key_d = 0;
+	all->info.key_esc = 0;
 
 	i = 0;
 	while (i < WIN_HEIGHT)
 	{
 		j = 0;
 		while (j < WIN_WIDTH)
-			all.info.buf[i][j++] = 0;
+			all->info.buf[i][j++] = 0;
 		i++;
 	}
 
-	if (!(all.info.texture = (int **)malloc(sizeof(int *) * 11)))
-		return (-1);
+	if (!(all->info.texture = (int **)malloc(sizeof(int *) * 5)))
+		return ;
 	i = 0;
 	while (i < 5)
 	{
-		if (!(all.info.texture[i++] = (int *)malloc(sizeof(int) * (TEX_HEIGHT * TEX_WIDTH))))
-			return (-1);
+		if (!(all->info.texture[i++] = (int *)malloc(sizeof(int) * (TEX_HEIGHT * TEX_WIDTH))))
+			return ;
 	}
 	i = 0;
 	while (i < 5)
 	{
 		j = 0;
 		while (j < TEX_HEIGHT * TEX_WIDTH)
-			all.info.texture[i][j++] = 0;
+			all->info.texture[i][j++] = 0;
 		i++;
 	}
 
-	load_texture(&all);
+	load_texture(all);
 
-	all.info.moveSpeed = 0.05;
-	all.info.rotSpeed = 0.05;
+	all->info.moveSpeed = 0.05;
+	all->info.rotSpeed = 0.05;
 	
-	all.info.win = mlx_new_window(all.info.mlx, WIN_WIDTH, WIN_HEIGHT, "mlx");
+	all->info.win = mlx_new_window(all->info.mlx, WIN_WIDTH, WIN_HEIGHT, "mlx");
 
-	all.img.img = mlx_new_image(all.info.mlx, WIN_WIDTH, WIN_HEIGHT);
-	all.img.data = (int *)mlx_get_data_addr(all.img.img, &all.img.bpp, &all.img.size_l, &all.img.endian);
+	all->img.img = mlx_new_image(all->info.mlx, WIN_WIDTH, WIN_HEIGHT);
+	all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian);
 	
-	mlx_loop_hook(all.info.mlx, &main_loop, &all);
-	mlx_hook(all.info.win, X_EVENT_KEY_PRESS, 0, &key_press, &all);
-	mlx_hook(all.info.win, X_EVENT_KEY_RELEASE, 0, &key_release, &all);
+	mlx_loop_hook(all->info.mlx, &main_loop, all);
+	mlx_hook(all->info.win, X_EVENT_KEY_PRESS, 0, &key_press, all);
+	mlx_hook(all->info.win, X_EVENT_KEY_RELEASE, 0, &key_release, all);
 
-	mlx_loop(all.info.mlx);
+	mlx_loop(all->info.mlx);
 }

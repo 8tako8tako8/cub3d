@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   raycasting_sprite.c                                :+:      :+:    :+:   */
+/*   raycasting_tmp.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/07 14:02:36 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/08 17:37:17 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,20 +93,6 @@ void	sortSprites(int *order, double *dist, int amount)
 	}
 	free(sprites);
 }
-
-int	worldMap[MAP_WIDTH][MAP_HEIGHT] =
-									{
-										{1,1,1,1,1,1,1,1,1,1},
-										{1,0,1,0,0,0,0,0,0,1},
-										{1,0,2,0,0,0,0,0,0,1},
-										{1,0,0,1,0,0,0,0,0,1},
-										{1,1,0,1,0,0,0,0,0,1},
-										{1,0,1,0,0,0,0,1,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,1,1,1,1,1,1,1,1,1}
-									};
 
 void	draw(t_all *all)
 {
@@ -216,7 +202,7 @@ void	calc(t_all *all)
 				all->ray.side = 1;
 			}
 			//Check if ray has hit a wall
-			if(worldMap[all->ray.mapX][all->ray.mapY] == 1)
+			if(all->map.map[all->ray.mapY][all->ray.mapX] == 1)
 				all->ray.hit = 1;
 		}
 		//Calculate distance of perpendicular ray (Euclidean distance will give fisheye effect!)
@@ -234,21 +220,13 @@ void	calc(t_all *all)
 		if(all->ray.drawend >= WIN_HEIGHT)
 			all->ray.drawend = WIN_HEIGHT - 1;
 		//texturing calculations
-		if (all->ray.side == 0 && all->ray.raydirX < 0 && all->ray.raydirY < 0)
+		if (all->ray.side == 0 && all->ray.raydirX < 0)
 			all->tex.texnum = 0; //1 subtracted from it so that texture 0 can be used!
-		else if (all->ray.side == 1 && all->ray.raydirX < 0 && all->ray.raydirY < 0)
-			all->tex.texnum = 1;
-		else if (all->ray.side == 0 && all->ray.raydirX < 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 0;
-		else if (all->ray.side == 1 && all->ray.raydirX < 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 2;
-		else if (all->ray.side == 0 && all->ray.raydirX >= 0 && all->ray.raydirY < 0)
+		else if (all->ray.side == 0 && all->ray.raydirX >= 0)
 			all->tex.texnum = 3;
-		else if (all->ray.side == 1 && all->ray.raydirX >= 0 && all->ray.raydirY < 0)
+		else if (all->ray.side == 1 && all->ray.raydirY < 0)
 			all->tex.texnum = 1;
-		else if (all->ray.side == 0 && all->ray.raydirX >= 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 3;
-		else
+		else if (all->ray.side == 1 && all->ray.raydirY >= 0)
 			all->tex.texnum = 2;
 
 		//calculate value of wallX
@@ -290,99 +268,7 @@ void	calc(t_all *all)
 	//SPRITE CASTING
 	//sort sprites from far to close
 	//遠いスプライトから順に配列に格納
-	struct Sprite	sprite[NUM_SPRITES] =
-	{
-		{2.5, 2.5, 4}
-//		{3.0, 2.0, 4},
-//		{2.0, 3.0, 4}
-	};
-	int		spriteOrder[NUM_SPRITES];
-	double	spriteDistance[NUM_SPRITES];
-	i = 0;
-	while (i < NUM_SPRITES)
-	{
-		spriteOrder[i] = i;
-		spriteDistance[i] = ((all->info.posX - sprite[i].x) * (all->info.posX - sprite[i].x) + (all->info.posY - sprite[i].y) * (all->info.posY - sprite[i].y)); //sqrt not taken, unneeded
-		i++;
-	}
-	sortSprites(spriteOrder, spriteDistance, NUM_SPRITES);
-	//after sorting the sprites, do the projection and draw them
-	i = 0;
-	while (i < NUM_SPRITES)
-	{
-		//translate sprite position to relative to camera
-		all->spr.spriteX = sprite[spriteOrder[i]].x - all->info.posX;
-		all->spr.spriteY = sprite[spriteOrder[i]].y - all->info.posY;
 
-		//transform sprite with the inverse camera matrix
-		// [ planeX   dirX ] -1                                       [ dirY      -dirX ]
-		// [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
-		// [ planeY   dirY ]                                          [ -planeY  planeX ]
-
-		all->spr.invDet = 1.0 / (all->info.planeX * all->info.dirY - all->info.dirX * all->info.planeY); //required for correct matrix multiplication
-
-		all->spr.transformX = all->spr.invDet * (all->info.dirY * all->spr.spriteX - all->info.dirX * all->spr.spriteY);
-		all->spr.transformY = all->spr.invDet * (-all->info.planeY * all->spr.spriteX + all->info.planeX * all->spr.spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
-
-		all->spr.spriteScreenX = (int)((WIN_WIDTH / 2) * (1 + all->spr.transformX / all->spr.transformY));
-
-		all->spr.vMoveScreen = (int)(vMove / all->spr.transformY);
-
-		//calculate height of the sprite on screen
-		all->spr.spriteHeight = (int)ft_absolute_value((WIN_HEIGHT / all->spr.transformY) / vDiv);
-/* 		if (((height / all->spr.transformY) / vDiv) < 0)	
-			all->spr.spriteHeight = - (int)((height / all->spr.transformY) / vDiv); //using "transformY" instead of the real distance prevents fisheye
-		else
-			all->spr.spriteHeight = (int)((height / all->spr.transformY) / vDiv); //using "transformY" instead of the real distance prevents fisheye */
-		
-		//calculate lowest and highest pixel to fill in current stripe
-		all->spr.drawStartY = -all->spr.spriteHeight / 2 + WIN_HEIGHT / 2 + all->spr.vMoveScreen;
-		if(all->spr.drawStartY < 0)
-			all->spr.drawStartY = 0;
-		all->spr.drawEndY = all->spr.spriteHeight / 2 + WIN_HEIGHT / 2 + all->spr.vMoveScreen;
-		if(all->spr.drawEndY >= WIN_HEIGHT)
-			all->spr.drawEndY = WIN_HEIGHT - 1;
-
-		//calculate width of the sprite
-		all->spr.spriteWidth = (int)ft_absolute_value((WIN_HEIGHT / all->spr.transformY) / uDiv);
-/* 		if (((height / all->spr.transformY) / uDiv) < 0)
-			all->spr.spriteWidth = - (int)((height / all->spr.transformY) / uDiv);
-		else
-			all->spr.spriteWidth = (int)((height / all->spr.transformY) / uDiv); */
-		
-		all->spr.drawStartX = -all->spr.spriteWidth / 2 + all->spr.spriteScreenX;
-		if(all->spr.drawStartX < 0)
-			all->spr.drawStartX = 0;
-		all->spr.drawEndX = all->spr.spriteWidth / 2 + all->spr.spriteScreenX;
-		if(all->spr.drawEndX >= WIN_WIDTH)
-			all->spr.drawEndX = WIN_WIDTH - 1;
-
-		//loop through every vertical stripe of the sprite on screen
-		stripe = all->spr.drawStartX;
-		while (stripe < all->spr.drawEndX)
-		{
-			all->spr.texX = (int)((256 * (stripe - (-all->spr.spriteWidth / 2 + all->spr.spriteScreenX)) * TEX_WIDTH / all->spr.spriteWidth) / 256);
-			//the conditions in the if are:
-			//1) it's in front of camera plane so you don't see things behind you
-			//2) it's on the screen (left)
-			//3) it's on the screen (right)
-			//4) ZBuffer, with perpendicular distance
-			if (all->spr.transformY > 0 && stripe > 0 && stripe < WIN_WIDTH && all->spr.transformY < all->info.zBuffer[stripe])
-			{
-				y = all->spr.drawStartY;
-				while (y < all->spr.drawEndY) //for every pixel of the current stripe
-				{
-					all->spr.d = (y-all->spr.vMoveScreen) * 256 - WIN_HEIGHT * 128 + all->spr.spriteHeight * 128; //256 and 128 factors to avoid floats
-					all->spr.texY = ((all->spr.d * TEX_HEIGHT) / all->spr.spriteHeight) / 256;
-					all->spr.color3 = all->info.texture[sprite[spriteOrder[i]].texture][TEX_WIDTH * all->spr.texY + all->spr.texX]; //get current color from the texture
-					if((all->spr.color3 & 0x00FFFFFF) != 0) all->info.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
-					y++;
-				}
-			}
-			stripe++;
-		}
-		i++;
-	}
 }
 
 int	main_loop(t_all *all)
@@ -397,21 +283,21 @@ void	key_update(t_all *all)
 {
 	if (all->info.key_w)
 	{
-		if (!worldMap[(int)(all->info.posX + all->info.dirX * all->info.moveSpeed)][(int)(all->info.posY)])
+		if (!all->map.map[(int)(all->info.posY)][(int)(all->info.posX + all->info.dirX * all->info.moveSpeed)])
 			all->info.posX += all->info.dirX * all->info.moveSpeed;
-		if (!worldMap[(int)(all->info.posX)][(int)(all->info.posY + all->info.dirY * all->info.moveSpeed)])
+		if (!all->map.map[(int)(all->info.posY + all->info.dirY * all->info.moveSpeed)][(int)(all->info.posX)])
 			all->info.posY += all->info.dirY * all->info.moveSpeed;
 	}
 	//move backwards if no wall behind you
 	if (all->info.key_s)
 	{
-		if (!worldMap[(int)(all->info.posX - all->info.dirX * all->info.moveSpeed)][(int)(all->info.posY)])
+		if (!all->map.map[(int)(all->info.posY)][(int)(all->info.posX - all->info.dirX * all->info.moveSpeed)])
 			all->info.posX -= all->info.dirX * all->info.moveSpeed;
-		if (!worldMap[(int)(all->info.posX)][(int)(all->info.posY - all->info.dirY * all->info.moveSpeed)])
+		if (!all->map.map[(int)(all->info.posY - all->info.dirY * all->info.moveSpeed)][(int)(all->info.posX)])
 			all->info.posY -= all->info.dirY * all->info.moveSpeed;
 	}
-	//rotate to the right
-	if (all->info.key_d)
+	//rotate to the left
+	if (all->info.key_a)
 	{
 		//both camera direction and camera plane must be rotated
 		all->ray.olddirX = all->info.dirX;
@@ -421,8 +307,8 @@ void	key_update(t_all *all)
 		all->info.planeX = all->info.planeX * cos(-all->info.rotSpeed) - all->info.planeY * sin(-all->info.rotSpeed);
 		all->info.planeY = all->ray.oldplaneX * sin(-all->info.rotSpeed) + all->info.planeY * cos(-all->info.rotSpeed);
 	}
-	//rotate to the left
-	if (all->info.key_a)
+	//rotate to the right
+	if (all->info.key_d)
 	{
 		//both camera direction and camera plane must be rotated
 		all->ray.olddirX = all->info.dirX;
@@ -489,73 +375,102 @@ void	load_image(t_all *all, int *texture, char *path)
 
 void	load_texture(t_all *all)
 {
-	load_image(all, all->info.texture[0], "textures/eagle.xpm");
-	load_image(all, all->info.texture[1], "textures/redbrick.xpm");
-	load_image(all, all->info.texture[2], "textures/purplestone.xpm");
-	load_image(all, all->info.texture[3], "textures/greystone.xpm");
-	load_image(all, all->info.texture[4], "textures/barrel.xpm");
+	load_image(all, all->info.texture[0], "west/redbrick.xpm");
+	load_image(all, all->info.texture[1], "south/greystone.xpm");
+	load_image(all, all->info.texture[2], "north/eagle.xpm");
+	load_image(all, all->info.texture[3], "east/purplestone.xpm");
+	load_image(all, all->info.texture[4], "sprite/barrel.xpm");
 
 }
 
-int	main(void)
+void	ft_raycasting(t_all *all)
 {
-	t_all	all;
 	int		i;
 	int		j;
 
-	all.info.mlx = mlx_init();
+	all->info.mlx = mlx_init();
 
-	all.info.posX = 5.0;
-	all.info.posY = 5.0;
-	all.info.dirX = -1.0;
-	all.info.dirY = 0.0;
-	all.info.planeX = 0.0;
-	all.info.planeY = 0.66;
-	all.info.key_a = 0;
-	all.info.key_w = 0;
-	all.info.key_s = 0;
-	all.info.key_d = 0;
-	all.info.key_esc = 0;
+	all->info.posX = 2.5;
+	all->info.posY = 2.5;
+	all->info.dirX = 0.0;
+	all->info.dirY = -1.0;
+	all->info.planeX = 0.66;
+	all->info.planeY = 0.0;
+	all->info.key_a = 0;
+	all->info.key_w = 0;
+	all->info.key_s = 0;
+	all->info.key_d = 0;
+	all->info.key_esc = 0;
 
 	i = 0;
 	while (i < WIN_HEIGHT)
 	{
 		j = 0;
 		while (j < WIN_WIDTH)
-			all.info.buf[i][j++] = 0;
+			all->info.buf[i][j++] = 0;
 		i++;
 	}
 
-	if (!(all.info.texture = (int **)malloc(sizeof(int *) * 11)))
-		return (-1);
+	if (!(all->info.texture = (int **)malloc(sizeof(int *) * 5)))
+		return ;
 	i = 0;
 	while (i < 5)
 	{
-		if (!(all.info.texture[i++] = (int *)malloc(sizeof(int) * (TEX_HEIGHT * TEX_WIDTH))))
-			return (-1);
+		if (!(all->info.texture[i++] = (int *)malloc(sizeof(int) * (TEX_HEIGHT * TEX_WIDTH))))
+			return ;
 	}
 	i = 0;
 	while (i < 5)
 	{
 		j = 0;
 		while (j < TEX_HEIGHT * TEX_WIDTH)
-			all.info.texture[i][j++] = 0;
+			all->info.texture[i][j++] = 0;
 		i++;
 	}
 
-	load_texture(&all);
+	load_texture(all);
 
-	all.info.moveSpeed = 0.05;
-	all.info.rotSpeed = 0.05;
+	all->info.moveSpeed = 0.05;
+	all->info.rotSpeed = 0.05;
 	
-	all.info.win = mlx_new_window(all.info.mlx, WIN_WIDTH, WIN_HEIGHT, "mlx");
+	all->info.win = mlx_new_window(all->info.mlx, WIN_WIDTH, WIN_HEIGHT, "mlx");
 
-	all.img.img = mlx_new_image(all.info.mlx, WIN_WIDTH, WIN_HEIGHT);
-	all.img.data = (int *)mlx_get_data_addr(all.img.img, &all.img.bpp, &all.img.size_l, &all.img.endian);
+	all->img.img = mlx_new_image(all->info.mlx, WIN_WIDTH, WIN_HEIGHT);
+	all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian);
 	
-	mlx_loop_hook(all.info.mlx, &main_loop, &all);
-	mlx_hook(all.info.win, X_EVENT_KEY_PRESS, 0, &key_press, &all);
-	mlx_hook(all.info.win, X_EVENT_KEY_RELEASE, 0, &key_release, &all);
+	mlx_loop_hook(all->info.mlx, &main_loop, all);
+	mlx_hook(all->info.win, X_EVENT_KEY_PRESS, 0, &key_press, all);
+	mlx_hook(all->info.win, X_EVENT_KEY_RELEASE, 0, &key_release, all);
 
-	mlx_loop(all.info.mlx);
+	mlx_loop(all->info.mlx);
+}
+
+int	main(void)
+{
+	int	i;
+	t_all	all;
+
+	all.map.map[0][0] = 1;all.map.map[0][1] = 1;all.map.map[0][2] = 1;all.map.map[0][3] = 1;all.map.map[0][4] = 1;
+	all.map.map[1][0] = 1;all.map.map[1][1] = 0;all.map.map[1][2] = 0;all.map.map[1][3] = 0;all.map.map[1][4] = 1;
+	all.map.map[2][0] = 1;all.map.map[2][1] = 0;all.map.map[2][2] = 0;all.map.map[2][3] = 0;all.map.map[2][4] = 1;
+	all.map.map[3][0] = 1;all.map.map[3][1] = 0;all.map.map[3][2] = 0;all.map.map[3][3] = 0;all.map.map[3][4] = 1;
+	all.map.map[4][0] = 1;all.map.map[4][1] = 1;all.map.map[4][2] = 1;all.map.map[4][3] = 1;all.map.map[4][4] = 1;
+
+	double	**sprpoint;
+	sprpoint = (double **)malloc(sizeof(double *) * 10);
+	i = 0;
+	while (i < 10)
+	{
+		sprpoint[i++] = (double *)malloc(sizeof(double) * 2);
+	}
+	
+	i = 0;
+	while (i < 10)
+	{
+		sprpoint[i][0] = 1.2 + i;
+		sprpoint[i][1] = 1.4 + i;
+		printf("%.2f, %.2f\n", sprpoint[i][0], sprpoint[i][1]);
+		i++;
+	}
+	ft_raycasting(&all);
 }

@@ -1,16 +1,92 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   raycasting_sprite.c                                :+:      :+:    :+:   */
+/*   raycasting_tmp3.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/07 14:02:36 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/08 22:37:08 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+void		ft_putlst(t_sprlst *list)
+{
+	while (list != NULL)
+	{
+		printf("%f, %f\n", list->x, list->y);
+		list = list->next;
+	}
+}
+
+int			ft_cmp_distance(t_sprlst *list1, t_sprlst *list2, double posX, double posY)
+{
+	double		distance1;
+	double		distance2;
+
+	distance1 = ((posX - list1->x) * (posX - list1->x) + (posY - list1->y) * (posY - list1->y));
+	distance2 = ((posX - list2->x) * (posX - list2->x) + (posY - list2->y) * (posY - list2->y));
+	if (distance1 >= distance2)
+		return (1);
+	else
+		return (0);
+}
+
+t_sprlst	*ft_merge_lst(t_sprlst *list1, t_sprlst *list2, double posX, double posY)
+{
+    t_sprlst  *newlst_end;
+    t_sprlst  newlst_head;
+
+    newlst_end = &newlst_head;
+    while ((list1 != NULL) && (list2 != NULL))
+    {
+        if (ft_cmp_distance(list1, list2, posX, posY))
+        {
+            newlst_end->next = list1;
+            list1 = list1->next;
+            newlst_end = newlst_end->next;
+        }
+        else
+        {
+            newlst_end->next = list2;
+            list2 = list2->next;
+            newlst_end = newlst_end->next;
+        }
+    }
+    if (list1 == NULL)
+        newlst_end->next = list2;
+    else
+        newlst_end->next = list1;
+    return (newlst_head.next);
+}
+
+t_sprlst  *ft_lst_merge_sort(t_sprlst *list, double posX, double posY)
+{
+    t_sprlst      *front;
+    t_sprlst      *back;
+    t_sprlst      *sepa;
+
+    // 要素が１つ以下なら終了
+    if (list == NULL || list->next == NULL)
+        return (list);
+    // リストの中心を探す。1:2でポインタを動かす。
+    front = list;
+    back = list->next;
+	if (back != NULL)
+		back = back->next;
+    while (back != NULL)
+    {
+        front = front->next;
+        back = back->next;
+        if (back != NULL)
+            back = back->next;
+    }
+    sepa = front->next;
+    front->next = NULL;
+    return (ft_merge_lst(ft_lst_merge_sort(list, posX, posY), ft_lst_merge_sort(sepa, posX, posY), posX, posY));
+}
 
 double  ft_decimals(double value)
 {
@@ -43,7 +119,7 @@ double	ft_absolute_value(double value)
 	return (value);
 }
 
-void	sort_order(t_pair *orders, int amount)
+/* void	sort_order(t_pair *orders, int amount)
 {
 	t_pair	tmp;
 	int		i;
@@ -68,9 +144,9 @@ void	sort_order(t_pair *orders, int amount)
 		}
 		i++;
 	}
-}
+} */
 
-void	sortSprites(int *order, double *dist, int amount)
+/* void	sortSprites(int *order, double *dist, int amount)
 {
 	t_pair	*sprites;
 	int		i;
@@ -92,21 +168,7 @@ void	sortSprites(int *order, double *dist, int amount)
 		i++;
 	}
 	free(sprites);
-}
-
-int	worldMap[MAP_WIDTH][MAP_HEIGHT] =
-									{
-										{1,1,1,1,1,1,1,1,1,1},
-										{1,0,1,0,0,0,0,0,0,1},
-										{1,0,2,0,0,0,0,0,0,1},
-										{1,0,0,1,0,0,0,0,0,1},
-										{1,1,0,1,0,0,0,0,0,1},
-										{1,0,1,0,0,0,0,1,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,0,0,0,0,0,0,0,0,1},
-										{1,1,1,1,1,1,1,1,1,1}
-									};
+} */
 
 void	draw(t_all *all)
 {
@@ -216,7 +278,7 @@ void	calc(t_all *all)
 				all->ray.side = 1;
 			}
 			//Check if ray has hit a wall
-			if(worldMap[all->ray.mapX][all->ray.mapY] == 1)
+			if(all->map.map[all->ray.mapY][all->ray.mapX] == 1)
 				all->ray.hit = 1;
 		}
 		//Calculate distance of perpendicular ray (Euclidean distance will give fisheye effect!)
@@ -234,21 +296,13 @@ void	calc(t_all *all)
 		if(all->ray.drawend >= WIN_HEIGHT)
 			all->ray.drawend = WIN_HEIGHT - 1;
 		//texturing calculations
-		if (all->ray.side == 0 && all->ray.raydirX < 0 && all->ray.raydirY < 0)
+		if (all->ray.side == 0 && all->ray.raydirX < 0)
 			all->tex.texnum = 0; //1 subtracted from it so that texture 0 can be used!
-		else if (all->ray.side == 1 && all->ray.raydirX < 0 && all->ray.raydirY < 0)
-			all->tex.texnum = 1;
-		else if (all->ray.side == 0 && all->ray.raydirX < 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 0;
-		else if (all->ray.side == 1 && all->ray.raydirX < 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 2;
-		else if (all->ray.side == 0 && all->ray.raydirX >= 0 && all->ray.raydirY < 0)
+		else if (all->ray.side == 0 && all->ray.raydirX >= 0)
 			all->tex.texnum = 3;
-		else if (all->ray.side == 1 && all->ray.raydirX >= 0 && all->ray.raydirY < 0)
+		else if (all->ray.side == 1 && all->ray.raydirY < 0)
 			all->tex.texnum = 1;
-		else if (all->ray.side == 0 && all->ray.raydirX >= 0 && all->ray.raydirY >= 0)
-			all->tex.texnum = 3;
-		else
+		else if (all->ray.side == 1 && all->ray.raydirY >= 0)
 			all->tex.texnum = 2;
 
 		//calculate value of wallX
@@ -286,33 +340,29 @@ void	calc(t_all *all)
 		all->info.zBuffer[x] = all->ray.perpwalldist; //perpendicular distance is used
 		x++;
 	}
-
 	//SPRITE CASTING
 	//sort sprites from far to close
 	//遠いスプライトから順に配列に格納
-	struct Sprite	sprite[NUM_SPRITES] =
-	{
-		{2.5, 2.5, 4}
-//		{3.0, 2.0, 4},
-//		{2.0, 3.0, 4}
-	};
-	int		spriteOrder[NUM_SPRITES];
-	double	spriteDistance[NUM_SPRITES];
+	//after sorting the sprites, do the projection and draw them
+	all->sprlst = ft_lst_merge_sort(all->sprlst, all->info.posX, all->info.posY);
+	double		sprite_x[all->spr.number];
+	double		sprite_y[all->spr.number];
+	t_sprlst *sprite;
+	sprite = all->sprlst;
 	i = 0;
-	while (i < NUM_SPRITES)
+	while (i < all->spr.number)
 	{
-		spriteOrder[i] = i;
-		spriteDistance[i] = ((all->info.posX - sprite[i].x) * (all->info.posX - sprite[i].x) + (all->info.posY - sprite[i].y) * (all->info.posY - sprite[i].y)); //sqrt not taken, unneeded
+		sprite_x[i] = sprite->x;
+		sprite_y[i] = sprite->y;
+		sprite = sprite->next;
 		i++;
 	}
-	sortSprites(spriteOrder, spriteDistance, NUM_SPRITES);
-	//after sorting the sprites, do the projection and draw them
 	i = 0;
-	while (i < NUM_SPRITES)
+	while (i < all->spr.number)
 	{
 		//translate sprite position to relative to camera
-		all->spr.spriteX = sprite[spriteOrder[i]].x - all->info.posX;
-		all->spr.spriteY = sprite[spriteOrder[i]].y - all->info.posY;
+		all->spr.spriteX = sprite_x[i] - all->info.posX;
+		all->spr.spriteY = sprite_y[i] - all->info.posY;
 
 		//transform sprite with the inverse camera matrix
 		// [ planeX   dirX ] -1                                       [ dirY      -dirX ]
@@ -374,7 +424,7 @@ void	calc(t_all *all)
 				{
 					all->spr.d = (y-all->spr.vMoveScreen) * 256 - WIN_HEIGHT * 128 + all->spr.spriteHeight * 128; //256 and 128 factors to avoid floats
 					all->spr.texY = ((all->spr.d * TEX_HEIGHT) / all->spr.spriteHeight) / 256;
-					all->spr.color3 = all->info.texture[sprite[spriteOrder[i]].texture][TEX_WIDTH * all->spr.texY + all->spr.texX]; //get current color from the texture
+					all->spr.color3 = all->info.texture[4][TEX_WIDTH * all->spr.texY + all->spr.texX]; //get current color from the texture
 					if((all->spr.color3 & 0x00FFFFFF) != 0) all->info.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
 					y++;
 				}
@@ -382,6 +432,7 @@ void	calc(t_all *all)
 			stripe++;
 		}
 		i++;
+		//all->sprlst = all->sprlst->next;
 	}
 }
 
@@ -397,21 +448,21 @@ void	key_update(t_all *all)
 {
 	if (all->info.key_w)
 	{
-		if (!worldMap[(int)(all->info.posX + all->info.dirX * all->info.moveSpeed)][(int)(all->info.posY)])
+		if (!all->map.map[(int)(all->info.posY)][(int)(all->info.posX + all->info.dirX * all->info.moveSpeed)])
 			all->info.posX += all->info.dirX * all->info.moveSpeed;
-		if (!worldMap[(int)(all->info.posX)][(int)(all->info.posY + all->info.dirY * all->info.moveSpeed)])
+		if (!all->map.map[(int)(all->info.posY + all->info.dirY * all->info.moveSpeed)][(int)(all->info.posX)])
 			all->info.posY += all->info.dirY * all->info.moveSpeed;
 	}
 	//move backwards if no wall behind you
 	if (all->info.key_s)
 	{
-		if (!worldMap[(int)(all->info.posX - all->info.dirX * all->info.moveSpeed)][(int)(all->info.posY)])
+		if (!all->map.map[(int)(all->info.posY)][(int)(all->info.posX - all->info.dirX * all->info.moveSpeed)])
 			all->info.posX -= all->info.dirX * all->info.moveSpeed;
-		if (!worldMap[(int)(all->info.posX)][(int)(all->info.posY - all->info.dirY * all->info.moveSpeed)])
+		if (!all->map.map[(int)(all->info.posY - all->info.dirY * all->info.moveSpeed)][(int)(all->info.posX)])
 			all->info.posY -= all->info.dirY * all->info.moveSpeed;
 	}
-	//rotate to the right
-	if (all->info.key_d)
+	//rotate to the left
+	if (all->info.key_a)
 	{
 		//both camera direction and camera plane must be rotated
 		all->ray.olddirX = all->info.dirX;
@@ -421,8 +472,8 @@ void	key_update(t_all *all)
 		all->info.planeX = all->info.planeX * cos(-all->info.rotSpeed) - all->info.planeY * sin(-all->info.rotSpeed);
 		all->info.planeY = all->ray.oldplaneX * sin(-all->info.rotSpeed) + all->info.planeY * cos(-all->info.rotSpeed);
 	}
-	//rotate to the left
-	if (all->info.key_a)
+	//rotate to the right
+	if (all->info.key_d)
 	{
 		//both camera direction and camera plane must be rotated
 		all->ray.olddirX = all->info.dirX;
@@ -489,73 +540,165 @@ void	load_image(t_all *all, int *texture, char *path)
 
 void	load_texture(t_all *all)
 {
-	load_image(all, all->info.texture[0], "textures/eagle.xpm");
-	load_image(all, all->info.texture[1], "textures/redbrick.xpm");
-	load_image(all, all->info.texture[2], "textures/purplestone.xpm");
-	load_image(all, all->info.texture[3], "textures/greystone.xpm");
-	load_image(all, all->info.texture[4], "textures/barrel.xpm");
+	load_image(all, all->info.texture[0], "west/redbrick.xpm");
+	load_image(all, all->info.texture[1], "south/greystone.xpm");
+	load_image(all, all->info.texture[2], "north/eagle.xpm");
+	load_image(all, all->info.texture[3], "east/purplestone.xpm");
+	load_image(all, all->info.texture[4], "sprite/barrel.xpm");
 
 }
 
-int	main(void)
+void	ft_raycasting(t_all *all)
 {
-	t_all	all;
 	int		i;
 	int		j;
 
-	all.info.mlx = mlx_init();
+	all->info.mlx = mlx_init();
 
-	all.info.posX = 5.0;
-	all.info.posY = 5.0;
-	all.info.dirX = -1.0;
-	all.info.dirY = 0.0;
-	all.info.planeX = 0.0;
-	all.info.planeY = 0.66;
-	all.info.key_a = 0;
-	all.info.key_w = 0;
-	all.info.key_s = 0;
-	all.info.key_d = 0;
-	all.info.key_esc = 0;
+	all->info.posX = 2.5;
+	all->info.posY = 2.5;
+	all->info.dirX = 0.0;
+	all->info.dirY = -1.0;
+	all->info.planeX = 0.66;
+	all->info.planeY = 0.0;
+	all->info.key_a = 0;
+	all->info.key_w = 0;
+	all->info.key_s = 0;
+	all->info.key_d = 0;
+	all->info.key_esc = 0;
 
 	i = 0;
 	while (i < WIN_HEIGHT)
 	{
 		j = 0;
 		while (j < WIN_WIDTH)
-			all.info.buf[i][j++] = 0;
+			all->info.buf[i][j++] = 0;
 		i++;
 	}
 
-	if (!(all.info.texture = (int **)malloc(sizeof(int *) * 11)))
-		return (-1);
+	if (!(all->info.texture = (int **)malloc(sizeof(int *) * 5)))
+		return ;
 	i = 0;
 	while (i < 5)
 	{
-		if (!(all.info.texture[i++] = (int *)malloc(sizeof(int) * (TEX_HEIGHT * TEX_WIDTH))))
-			return (-1);
+		if (!(all->info.texture[i++] = (int *)malloc(sizeof(int) * (TEX_HEIGHT * TEX_WIDTH))))
+			return ;
 	}
 	i = 0;
 	while (i < 5)
 	{
 		j = 0;
 		while (j < TEX_HEIGHT * TEX_WIDTH)
-			all.info.texture[i][j++] = 0;
+			all->info.texture[i][j++] = 0;
 		i++;
 	}
 
-	load_texture(&all);
+	load_texture(all);
 
-	all.info.moveSpeed = 0.05;
-	all.info.rotSpeed = 0.05;
+	all->info.moveSpeed = 0.05;
+	all->info.rotSpeed = 0.05;
 	
-	all.info.win = mlx_new_window(all.info.mlx, WIN_WIDTH, WIN_HEIGHT, "mlx");
+	all->info.win = mlx_new_window(all->info.mlx, WIN_WIDTH, WIN_HEIGHT, "mlx");
 
-	all.img.img = mlx_new_image(all.info.mlx, WIN_WIDTH, WIN_HEIGHT);
-	all.img.data = (int *)mlx_get_data_addr(all.img.img, &all.img.bpp, &all.img.size_l, &all.img.endian);
+	all->img.img = mlx_new_image(all->info.mlx, WIN_WIDTH, WIN_HEIGHT);
+	all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian);
 	
-	mlx_loop_hook(all.info.mlx, &main_loop, &all);
-	mlx_hook(all.info.win, X_EVENT_KEY_PRESS, 0, &key_press, &all);
-	mlx_hook(all.info.win, X_EVENT_KEY_RELEASE, 0, &key_release, &all);
+	mlx_loop_hook(all->info.mlx, &main_loop, all);
+	mlx_hook(all->info.win, X_EVENT_KEY_PRESS, 0, &key_press, all);
+	mlx_hook(all->info.win, X_EVENT_KEY_RELEASE, 0, &key_release, all);
 
-	mlx_loop(all.info.mlx);
+	mlx_loop(all->info.mlx);
+}
+
+t_sprlst	*ft_newspr(double x, double y)
+{
+	t_sprlst	*newlist;
+
+	if (!(newlist = (t_sprlst *)malloc(sizeof(t_sprlst))))
+		return (NULL);
+	newlist->x = x;
+	newlist->y = y;
+	newlist->next = NULL;
+	return (newlist);
+}
+
+t_sprlst		*ft_lstlast_ex(t_sprlst *lst)
+{
+	t_sprlst	*curr_list;
+
+	if (lst == NULL)
+		return (NULL);
+	curr_list = lst;
+	while (curr_list->next != NULL)
+		curr_list = curr_list->next;
+	return (curr_list);
+}
+
+void	ft_lstadd_back_ex(t_sprlst **lst, t_sprlst *new)
+{
+	t_sprlst		*curr_lst;
+
+	if (!lst || !new)
+		return ;
+	if (!*lst)
+	{
+		*lst = new;
+		return ;
+	}
+	curr_lst = ft_lstlast_ex(*lst);
+	curr_lst->next = new;
+}
+
+int			ft_lstsize_ex(t_sprlst *lst)
+{
+	t_sprlst	*curr_lst;
+	int			i;
+
+	if (lst == NULL)
+		return (0);
+	curr_lst = lst;
+	i = 1;
+	while (curr_lst->next != NULL)
+	{
+		curr_lst = curr_lst->next;
+		i++;
+	}
+	return (i);
+}
+
+void	ft_tmp(t_all *all)
+{
+	all->spr.number = ft_lstsize_ex(all->sprlst);
+
+	ft_raycasting(all);
+}
+
+int	main(void)
+{
+	t_all	all;
+
+	all.map.map[0][0] = 1;all.map.map[0][1] = 1;all.map.map[0][2] = 1;all.map.map[0][3] = 1;all.map.map[0][4] = 1;
+	all.map.map[1][0] = 1;all.map.map[1][1] = 0;all.map.map[1][2] = 0;all.map.map[1][3] = 0;all.map.map[1][4] = 1;
+	all.map.map[2][0] = 1;all.map.map[2][1] = 2;all.map.map[2][2] = 0;all.map.map[2][3] = 0;all.map.map[2][4] = 1;
+	all.map.map[3][0] = 1;all.map.map[3][1] = 2;all.map.map[3][2] = 0;all.map.map[3][3] = 0;all.map.map[3][4] = 1;
+	all.map.map[4][0] = 1;all.map.map[4][1] = 0;all.map.map[4][2] = 0;all.map.map[4][3] = 0;all.map.map[4][4] = 1;
+	all.map.map[5][0] = 1;all.map.map[5][1] = 2;all.map.map[5][2] = 0;all.map.map[5][3] = 2;all.map.map[5][4] = 1;
+	all.map.map[6][0] = 1;all.map.map[6][1] = 0;all.map.map[6][2] = 0;all.map.map[6][3] = 0;all.map.map[6][4] = 1;
+	all.map.map[7][0] = 1;all.map.map[7][1] = 0;all.map.map[7][2] = 0;all.map.map[7][3] = 0;all.map.map[7][4] = 1;
+	all.map.map[8][0] = 1;all.map.map[8][1] = 0;all.map.map[8][2] = 0;all.map.map[8][3] = 0;all.map.map[8][4] = 1;
+	all.map.map[9][0] = 1;all.map.map[9][1] = 1;all.map.map[9][2] = 1;all.map.map[9][3] = 1;all.map.map[9][4] = 1;
+
+	all.sprlst = NULL;
+	ft_lstadd_back_ex(&all.sprlst, ft_newspr(1.5,2.5));
+	ft_lstadd_back_ex(&all.sprlst, ft_newspr(1.5,3.5));
+	ft_lstadd_back_ex(&all.sprlst, ft_newspr(1.5,5.5));
+	ft_lstadd_back_ex(&all.sprlst, ft_newspr(3.5,5.5));
+
+	ft_putlst(all.sprlst);
+	ft_tmp(&all);
+//	all.sprlst = ft_lst_merge_sort(all.sprlst, all.info.posX, all.info.posY);
+//	ft_putlst(all.sprlst);
+
+
+//	ft_raycasting(&all, sprlst);
 }

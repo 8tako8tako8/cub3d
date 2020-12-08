@@ -16,11 +16,10 @@
 # define X_EVENT_KEY_EXIT	17
 # define TEX_WIDTH 64
 # define TEX_HEIGHT 64
-# define MAP_WIDTH 40
-# define MAP_HEIGHT 40
+# define MAP_WIDTH 50
+# define MAP_HEIGHT 50
 # define WIN_WIDTH 640
 # define WIN_HEIGHT 480
-# define NUM_SPRITES 3
 # define uDiv 1
 # define vDiv 1
 # define vMove 0.0
@@ -69,7 +68,8 @@ typedef struct		s_cubflag
 
 typedef struct		s_map
 {
-    char            map[MAP_HEIGHT][MAP_WIDTH];
+    char	        charmap[MAP_HEIGHT][MAP_WIDTH];
+    int	        	map[MAP_HEIGHT][MAP_WIDTH];
 	int				start;
 	int				end;
 
@@ -93,13 +93,6 @@ typedef struct	s_img
 	int			img_width;
 	int			img_height;
 }				t_img;
-
-struct	Sprite
-{
-	double		x;
-	double		y;
-	int			texture;
-};
 
 typedef struct	s_info
 {
@@ -247,8 +240,16 @@ typedef struct		s_pair
 	int		second;
 }					t_pair;
 
+typedef struct		s_sprlst
+{
+	double			x;
+	double			y;
+	struct s_sprlst	*next;
+}					t_sprlst;
+
 typedef struct		s_spr
 {
+	int				number;
     double          spriteX;
     double          spriteY;
     double          invDet;
@@ -287,8 +288,10 @@ typedef struct		s_all
 	t_tex			tex;
 	t_pair			pair;
     t_spr           spr;
+	t_sprlst		*sprlst;
 }					t_all;
 
 void	key_update(t_all *all);
+void	ft_raycasting(t_all *all);
 
 #endif
