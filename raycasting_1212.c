@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   raycasting.c                                       :+:      :+:    :+:   */
+/*   raycasting_1212.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/13 16:38:23 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/13 19:45:41 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cub3d_1212.h"
 
 int			ft_cmp_distance_to_spr(t_sprlst *list1, t_sprlst *list2, double posX, double posY)
 {
@@ -121,7 +121,7 @@ void	ft_draw_window(t_all *all)
 		x = 0;
 		while (x < all->win_r.x)
 		{
-			all->img.data[y * all->win_r.x + x] = all->win_r.buf[y][x];
+			all->img.data[y * all->win_r.x + x] = all->info.buf[y][x];
 			x++;
 		}
 		y++;
@@ -142,10 +142,10 @@ void	ft_floor_casting(t_all *all)
 		{
 			// floor
 			//all->floor.color = all->color_f.rgb;
-			all->win_r.buf[y][x] = all->color_f.rgb;
+			all->info.buf[y][x] = all->color_f.rgb;
 			//ceiling (symmetrical, at height - y - 1 instead of y)
 			//all->floor.color = all->color_c.rgb;
-			all->win_r.buf[all->win_r.y - y - 1][x] = all->color_c.rgb;
+			all->info.buf[all->win_r.y - y - 1][x] = all->color_c.rgb;
 			x++;
 		}
 		y++;
@@ -279,7 +279,7 @@ void	ft_calc_raycasting(t_all *all)
 			all->ray.wallX = all->player.posX + all->ray.perpwalldist * all->ray.raydirX;
 		all->ray.wallX -= ft_floor(all->ray.wallX);
 		//x coordinate on the texture
-		all->tex.texX1 = (int)(all->ray.wallX * (double)(all->img.tex_width[all->tex.texnum]));
+		all->tex.texX1 = (int)(all->ray.wallX * (double)all->img.tex_width[all->tex.texnum]);
 		if(all->ray.side == 0 && all->ray.raydirX > 0)
 			all->tex.texX1 = all->img.tex_width[all->tex.texnum] - all->tex.texX1 - 1;
 		if(all->ray.side == 1 && all->ray.raydirY < 0)
@@ -299,12 +299,12 @@ void	ft_calc_raycasting(t_all *all)
 			//make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
 			if(all->ray.side == 1)
 				all->tex.color2 = (all->tex.color2 >> 1) & 8355711;
-			all->win_r.buf[y][x] = all->tex.color2;
+			all->info.buf[y][x] = all->tex.color2;
 			y++;
 		}
 
 		//SET THE ZBUFFER FOR THE SPRITE CASTING
-		all->spr.zBuffer[x] = all->ray.perpwalldist; //perpendicular distance is used
+		all->info.zBuffer[x] = all->ray.perpwalldist; //perpendicular distance is used
 		x++;
 	}
 //	ft_sprite_casting();
@@ -367,7 +367,7 @@ void	ft_calc_raycasting(t_all *all)
 		while (stripe < all->spr.drawEndX)
 		{
 			all->spr.texX = (int)((256 * (stripe - (-all->spr.spriteWidth / 2 + all->spr.spriteScreenX)) * all->img.tex_width[4] / all->spr.spriteWidth) / 256);
-			if (all->spr.transformY > 0 && stripe > 0 && stripe < all->win_r.x && all->spr.transformY < all->spr.zBuffer[stripe])
+			if (all->spr.transformY > 0 && stripe > 0 && stripe < all->win_r.x && all->spr.transformY < all->info.zBuffer[stripe])
 			{
 				y = all->spr.drawStartY;
 				while (y < all->spr.drawEndY) //for every pixel of the current stripe
@@ -375,7 +375,7 @@ void	ft_calc_raycasting(t_all *all)
 					all->spr.d = (y-all->spr.vMoveScreen) * 256 - all->win_r.y * 128 + all->spr.spriteHeight * 128; //256 and 128 factors to avoid floats
 					all->spr.texY = ((all->spr.d * all->img.tex_height[4]) / all->spr.spriteHeight) / 256;
 					all->spr.color3 = all->info.texture[4][all->img.tex_width[4] * all->spr.texY + all->spr.texX]; //get current color from the texture
-					if((all->spr.color3 & 0x00FFFFFF) != 0) all->win_r.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
+					if((all->spr.color3 & 0x00FFFFFF) != 0) all->info.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
 					y++;
 				}
 			}
@@ -598,9 +598,20 @@ void	ft_raycasting(t_all *all)
 	mlx_get_screen_size(all->info.mlx, &all->win_r.screen_x, &all->win_r.screen_y);
 	ft_resize_win_size(all);
 	ft_init_buf_and_zbuffer(all);
+	
 	ft_set_pos_and_dir_and_plane(all);
 	ft_init_win_and_tex(all);
 	ft_load_texture(all);
+	DI(all->img.tex_width[0]);
+	DI(all->img.tex_width[1]);
+	DI(all->img.tex_width[2]);
+	DI(all->img.tex_width[3]);
+	DI(all->img.tex_width[4]);
+	DI(all->img.tex_height[0]);
+	DI(all->img.tex_height[1]);
+	DI(all->img.tex_height[2]);
+	DI(all->img.tex_height[3]);
+	DI(all->img.tex_height[4]);
 	if (!(all->info.win = mlx_new_window(all->info.mlx, all->win_r.x, all->win_r.y, "mlx")))
 		ft_put_error_and_exit("mlx_new_window failed\n", 2);
 	if (!(all->img.img = mlx_new_image(all->info.mlx, all->win_r.x, all->win_r.y)))
@@ -613,7 +624,7 @@ void	ft_raycasting(t_all *all)
 	mlx_loop(all->info.mlx);
 }
 
-/* void	ft_write_bmp(t_all *all)
+void	ft_write_bmp(t_all *all)
 {
 	all->info.mlx = mlx_init();
 	ft_set_pos_and_dir_and_plane(all);
@@ -623,4 +634,4 @@ void	ft_raycasting(t_all *all)
 	all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian);
 	ft_calc_raycasting(all);
 
-} */
+}

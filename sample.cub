@@ -1,18 +1,18 @@
-R              1 10
-NO     ./path_to_the_north_texture   
-SO       ./path_to_the_south_texture
-WE   ./path_to_the_west_texture
-EA  ./path_to_the_east_texture
+R       640 480
+NO     ./textures/spring.xpm
+SO       ./textures/autumn.xpm
+WE   ./textures/summer.xpm
+EA  ./textures/winter.xpm
 
+S   ./textures/oldcry2.xpm
+F    255,255,255
+C   0,255,255
 
-S   ./path_to_the_sprite_texture
-F    255,12,1
-C   225,30,0
-
-11111111111
-12222222221
-122222222221
-12222222221
-10000200101
-11100N02001
-11111111111
+1111111111111111111111111111111111
+1000000011
+100000000111
+10020000111
+10000001
+1000N001
+10000001
+1111111111111111111111111111111111

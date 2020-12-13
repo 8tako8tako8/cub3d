@@ -14,10 +14,12 @@
 # define X_EVENT_KEY_PRESS	2
 # define X_EVENT_KEY_RELEASE	3
 # define X_EVENT_KEY_EXIT	17
-//# define TEX_WIDTH 64
-//# define TEX_HEIGHT 64
+# define TEX_WIDTH 64
+# define TEX_HEIGHT 64
 # define MAP_WIDTH 50
 # define MAP_HEIGHT 50
+# define WIN_WIDTH 640
+# define WIN_HEIGHT 480
 # define uDiv 1
 # define vDiv 1
 # define vMove 0.0
@@ -96,7 +98,6 @@ typedef struct		s_img
 	int				img_height;
 	int				tex_width[5];
 	int				tex_height[5];
-
 }					t_img;
 
 typedef struct		s_player
@@ -120,8 +121,8 @@ typedef struct		s_info
 	int				key_s;
 	int				key_d;
 	int				key_esc;
-//	int				buf[WIN_HEIGHT][WIN_WIDTH];
-//	double			zBuffer[WIN_WIDTH];
+	int				buf[WIN_HEIGHT][WIN_WIDTH];
+	double			zBuffer[WIN_WIDTH];
 	int				**texture;
 
 }					t_info;
@@ -226,5 +227,6 @@ typedef struct		s_all
 void	key_update(t_all *all);
 void	ft_raycasting(t_all *all);
 void	ft_put_error_and_exit(char *s, int fd);
+void	ft_write_bmp(t_all *all);
 
 #endif

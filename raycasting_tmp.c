@@ -1,16 +1,92 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   raycasting_tmp.c                                   :+:      :+:    :+:   */
+/*   raycasting.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/08 17:37:17 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/09 13:41:00 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+/* void		ft_putlst(t_sprlst *list)
+{
+	while (list != NULL)
+	{
+		printf("%f, %f\n", list->x, list->y);
+		list = list->next;
+	}
+} */
+
+int			ft_cmp_distance(t_sprlst *list1, t_sprlst *list2, double posX, double posY)
+{
+	double		distance1;
+	double		distance2;
+
+	distance1 = ((posX - list1->x) * (posX - list1->x) + (posY - list1->y) * (posY - list1->y));
+	distance2 = ((posX - list2->x) * (posX - list2->x) + (posY - list2->y) * (posY - list2->y));
+	if (distance1 >= distance2)
+		return (1);
+	else
+		return (0);
+}
+
+t_sprlst	*ft_merge_lst(t_sprlst *list1, t_sprlst *list2, double posX, double posY)
+{
+    t_sprlst  *newlst_end;
+    t_sprlst  newlst_head;
+
+    newlst_end = &newlst_head;
+    while ((list1 != NULL) && (list2 != NULL))
+    {
+        if (ft_cmp_distance(list1, list2, posX, posY))
+        {
+            newlst_end->next = list1;
+            list1 = list1->next;
+            newlst_end = newlst_end->next;
+        }
+        else
+        {
+            newlst_end->next = list2;
+            list2 = list2->next;
+            newlst_end = newlst_end->next;
+        }
+    }
+    if (list1 == NULL)
+        newlst_end->next = list2;
+    else
+        newlst_end->next = list1;
+    return (newlst_head.next);
+}
+
+t_sprlst  *ft_lst_merge_sort(t_sprlst *list, double posX, double posY)
+{
+    t_sprlst      *front;
+    t_sprlst      *back;
+    t_sprlst      *sepa;
+
+    // 要素が１つ以下なら終了
+    if (list == NULL || list->next == NULL)
+        return (list);
+    // リストの中心を探す。1:2でポインタを動かす。
+    front = list;
+    back = list->next;
+	if (back != NULL)
+		back = back->next;
+    while (back != NULL)
+    {
+        front = front->next;
+        back = back->next;
+        if (back != NULL)
+            back = back->next;
+    }
+    sepa = front->next;
+    front->next = NULL;
+    return (ft_merge_lst(ft_lst_merge_sort(list, posX, posY), ft_lst_merge_sort(sepa, posX, posY), posX, posY));
+}
 
 double  ft_decimals(double value)
 {
@@ -43,7 +119,7 @@ double	ft_absolute_value(double value)
 	return (value);
 }
 
-void	sort_order(t_pair *orders, int amount)
+/* void	sort_order(t_pair *orders, int amount)
 {
 	t_pair	tmp;
 	int		i;
@@ -68,9 +144,9 @@ void	sort_order(t_pair *orders, int amount)
 		}
 		i++;
 	}
-}
+} */
 
-void	sortSprites(int *order, double *dist, int amount)
+/* void	sortSprites(int *order, double *dist, int amount)
 {
 	t_pair	*sprites;
 	int		i;
@@ -92,7 +168,7 @@ void	sortSprites(int *order, double *dist, int amount)
 		i++;
 	}
 	free(sprites);
-}
+} */
 
 void	draw(t_all *all)
 {
@@ -264,11 +340,100 @@ void	calc(t_all *all)
 		all->info.zBuffer[x] = all->ray.perpwalldist; //perpendicular distance is used
 		x++;
 	}
-
 	//SPRITE CASTING
 	//sort sprites from far to close
 	//遠いスプライトから順に配列に格納
+	//after sorting the sprites, do the projection and draw them
+	all->sprlst = ft_lst_merge_sort(all->sprlst, all->info.posX, all->info.posY);
+	double		sprite_x[all->spr.number];
+	double		sprite_y[all->spr.number];
+	t_sprlst *sprite;
+	sprite = all->sprlst;
+	i = 0;
+	while (i < all->spr.number)
+	{
+		sprite_x[i] = sprite->x;
+		sprite_y[i] = sprite->y;
+		sprite = sprite->next;
+		i++;
+	}
+	i = 0;
+	while (i < all->spr.number)
+	{
+		//translate sprite position to relative to camera
+		all->spr.spriteX = sprite_x[i] - all->info.posX;
+		all->spr.spriteY = sprite_y[i] - all->info.posY;
 
+		//transform sprite with the inverse camera matrix
+		// [ planeX   dirX ] -1                                       [ dirY      -dirX ]
+		// [               ]       =  1/(planeX*dirY-dirX*planeY) *   [                 ]
+		// [ planeY   dirY ]                                          [ -planeY  planeX ]
+
+		all->spr.invDet = 1.0 / (all->info.planeX * all->info.dirY - all->info.dirX * all->info.planeY); //required for correct matrix multiplication
+
+		all->spr.transformX = all->spr.invDet * (all->info.dirY * all->spr.spriteX - all->info.dirX * all->spr.spriteY);
+		all->spr.transformY = all->spr.invDet * (-all->info.planeY * all->spr.spriteX + all->info.planeX * all->spr.spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
+
+		all->spr.spriteScreenX = (int)((WIN_WIDTH / 2) * (1 + all->spr.transformX / all->spr.transformY));
+
+		all->spr.vMoveScreen = (int)(vMove / all->spr.transformY);
+
+		//calculate height of the sprite on screen
+		all->spr.spriteHeight = (int)ft_absolute_value((WIN_HEIGHT / all->spr.transformY) / vDiv);
+/* 		if (((height / all->spr.transformY) / vDiv) < 0)	
+			all->spr.spriteHeight = - (int)((height / all->spr.transformY) / vDiv); //using "transformY" instead of the real distance prevents fisheye
+		else
+			all->spr.spriteHeight = (int)((height / all->spr.transformY) / vDiv); //using "transformY" instead of the real distance prevents fisheye */
+		
+		//calculate lowest and highest pixel to fill in current stripe
+		all->spr.drawStartY = -all->spr.spriteHeight / 2 + WIN_HEIGHT / 2 + all->spr.vMoveScreen;
+		if(all->spr.drawStartY < 0)
+			all->spr.drawStartY = 0;
+		all->spr.drawEndY = all->spr.spriteHeight / 2 + WIN_HEIGHT / 2 + all->spr.vMoveScreen;
+		if(all->spr.drawEndY >= WIN_HEIGHT)
+			all->spr.drawEndY = WIN_HEIGHT - 1;
+
+		//calculate width of the sprite
+		all->spr.spriteWidth = (int)ft_absolute_value((WIN_HEIGHT / all->spr.transformY) / uDiv);
+/* 		if (((height / all->spr.transformY) / uDiv) < 0)
+			all->spr.spriteWidth = - (int)((height / all->spr.transformY) / uDiv);
+		else
+			all->spr.spriteWidth = (int)((height / all->spr.transformY) / uDiv); */
+		
+		all->spr.drawStartX = -all->spr.spriteWidth / 2 + all->spr.spriteScreenX;
+		if(all->spr.drawStartX < 0)
+			all->spr.drawStartX = 0;
+		all->spr.drawEndX = all->spr.spriteWidth / 2 + all->spr.spriteScreenX;
+		if(all->spr.drawEndX >= WIN_WIDTH)
+			all->spr.drawEndX = WIN_WIDTH - 1;
+
+		//loop through every vertical stripe of the sprite on screen
+		stripe = all->spr.drawStartX;
+		while (stripe < all->spr.drawEndX)
+		{
+			all->spr.texX = (int)((256 * (stripe - (-all->spr.spriteWidth / 2 + all->spr.spriteScreenX)) * TEX_WIDTH / all->spr.spriteWidth) / 256);
+			//the conditions in the if are:
+			//1) it's in front of camera plane so you don't see things behind you
+			//2) it's on the screen (left)
+			//3) it's on the screen (right)
+			//4) ZBuffer, with perpendicular distance
+			if (all->spr.transformY > 0 && stripe > 0 && stripe < WIN_WIDTH && all->spr.transformY < all->info.zBuffer[stripe])
+			{
+				y = all->spr.drawStartY;
+				while (y < all->spr.drawEndY) //for every pixel of the current stripe
+				{
+					all->spr.d = (y-all->spr.vMoveScreen) * 256 - WIN_HEIGHT * 128 + all->spr.spriteHeight * 128; //256 and 128 factors to avoid floats
+					all->spr.texY = ((all->spr.d * TEX_HEIGHT) / all->spr.spriteHeight) / 256;
+					all->spr.color3 = all->info.texture[4][TEX_WIDTH * all->spr.texY + all->spr.texX]; //get current color from the texture
+					if((all->spr.color3 & 0x00FFFFFF) != 0) all->info.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
+					y++;
+				}
+			}
+			stripe++;
+		}
+		i++;
+		//all->sprlst = all->sprlst->next;
+	}
 }
 
 int	main_loop(t_all *all)
@@ -380,27 +545,50 @@ void	load_texture(t_all *all)
 	load_image(all, all->info.texture[2], "north/eagle.xpm");
 	load_image(all, all->info.texture[3], "east/purplestone.xpm");
 	load_image(all, all->info.texture[4], "sprite/barrel.xpm");
-
 }
 
-void	ft_raycasting(t_all *all)
+void	ft_set_dir(t_all *all, double dirX, double dirY)
+{
+	all->info.dirX = dirX;
+	all->info.dirY = dirY;
+}
+
+void	ft_set_plane(t_all *all, double planeX, double planeY)
+{
+	all->info.planeX = planeX;
+	all->info.planeY = planeY;
+}
+
+void	ft_set_pos_and_dir_and_plane(t_all *all)
+{
+	all->info.posX = all->start_point.x;
+	all->info.posY = all->start_point.y;
+	if (all->start_point.dir == 'N')
+	{
+		ft_set_dir(all, 0.0, -1.0);
+		ft_set_plane(all, 0.66, 0.0);
+	}
+	else if (all->start_point.dir == 'S')
+	{
+		ft_set_dir(all, 0.0, 1.0);
+		ft_set_plane(all, -0.66, 0.0);
+	}
+	else if (all->start_point.dir == 'W')
+	{
+		ft_set_dir(all, -1.0, 0.0);
+		ft_set_plane(all, 0.0, -0.66);
+	}
+	else if (all->start_point.dir == 'E')
+	{
+		ft_set_dir(all, 1.0, 0.0);
+		ft_set_plane(all, 0.0, 0.66);
+	}
+}
+
+void	ft_init_win_and_tex(t_all *all)
 {
 	int		i;
 	int		j;
-
-	all->info.mlx = mlx_init();
-
-	all->info.posX = 2.5;
-	all->info.posY = 2.5;
-	all->info.dirX = 0.0;
-	all->info.dirY = -1.0;
-	all->info.planeX = 0.66;
-	all->info.planeY = 0.0;
-	all->info.key_a = 0;
-	all->info.key_w = 0;
-	all->info.key_s = 0;
-	all->info.key_d = 0;
-	all->info.key_esc = 0;
 
 	i = 0;
 	while (i < WIN_HEIGHT)
@@ -410,7 +598,6 @@ void	ft_raycasting(t_all *all)
 			all->info.buf[i][j++] = 0;
 		i++;
 	}
-
 	if (!(all->info.texture = (int **)malloc(sizeof(int *) * 5)))
 		return ;
 	i = 0;
@@ -427,50 +614,19 @@ void	ft_raycasting(t_all *all)
 			all->info.texture[i][j++] = 0;
 		i++;
 	}
+}
 
+void	ft_raycasting(t_all *all)
+{
+	all->info.mlx = mlx_init();
+	ft_set_pos_and_dir_and_plane(all);
+	ft_init_win_and_tex(all);
 	load_texture(all);
-
-	all->info.moveSpeed = 0.05;
-	all->info.rotSpeed = 0.05;
-	
 	all->info.win = mlx_new_window(all->info.mlx, WIN_WIDTH, WIN_HEIGHT, "mlx");
-
 	all->img.img = mlx_new_image(all->info.mlx, WIN_WIDTH, WIN_HEIGHT);
 	all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian);
-	
 	mlx_loop_hook(all->info.mlx, &main_loop, all);
 	mlx_hook(all->info.win, X_EVENT_KEY_PRESS, 0, &key_press, all);
 	mlx_hook(all->info.win, X_EVENT_KEY_RELEASE, 0, &key_release, all);
-
 	mlx_loop(all->info.mlx);
-}
-
-int	main(void)
-{
-	int	i;
-	t_all	all;
-
-	all.map.map[0][0] = 1;all.map.map[0][1] = 1;all.map.map[0][2] = 1;all.map.map[0][3] = 1;all.map.map[0][4] = 1;
-	all.map.map[1][0] = 1;all.map.map[1][1] = 0;all.map.map[1][2] = 0;all.map.map[1][3] = 0;all.map.map[1][4] = 1;
-	all.map.map[2][0] = 1;all.map.map[2][1] = 0;all.map.map[2][2] = 0;all.map.map[2][3] = 0;all.map.map[2][4] = 1;
-	all.map.map[3][0] = 1;all.map.map[3][1] = 0;all.map.map[3][2] = 0;all.map.map[3][3] = 0;all.map.map[3][4] = 1;
-	all.map.map[4][0] = 1;all.map.map[4][1] = 1;all.map.map[4][2] = 1;all.map.map[4][3] = 1;all.map.map[4][4] = 1;
-
-	double	**sprpoint;
-	sprpoint = (double **)malloc(sizeof(double *) * 10);
-	i = 0;
-	while (i < 10)
-	{
-		sprpoint[i++] = (double *)malloc(sizeof(double) * 2);
-	}
-	
-	i = 0;
-	while (i < 10)
-	{
-		sprpoint[i][0] = 1.2 + i;
-		sprpoint[i][1] = 1.4 + i;
-		printf("%.2f, %.2f\n", sprpoint[i][0], sprpoint[i][1]);
-		i++;
-	}
-	ft_raycasting(&all);
 }

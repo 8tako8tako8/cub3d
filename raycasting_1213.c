@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   raycasting.c                                       :+:      :+:    :+:   */
+/*   raycasting_1213.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/13 16:38:23 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/13 17:40:51 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cub3d_1213.h"
 
 int			ft_cmp_distance_to_spr(t_sprlst *list1, t_sprlst *list2, double posX, double posY)
 {
@@ -116,12 +116,12 @@ void	ft_draw_window(t_all *all)
 	int		y;
 
 	y = 0;
-	while (y < all->win_r.y)
+	while (y < WIN_HEIGHT)
 	{
 		x = 0;
-		while (x < all->win_r.x)
+		while (x < WIN_WIDTH)
 		{
-			all->img.data[y * all->win_r.x + x] = all->win_r.buf[y][x];
+			all->img.data[y * WIN_WIDTH + x] = all->info.buf[y][x];
 			x++;
 		}
 		y++;
@@ -134,18 +134,18 @@ void	ft_floor_casting(t_all *all)
 	int		x;
 	int		y;
 
-	y = all->win_r.y / 2 + 1;
-	while (y < all->win_r.y)
+	y = WIN_HEIGHT / 2 + 1;
+	while (y < WIN_HEIGHT)
 	{
 		x = 0;
-		while (x < all->win_r.x)
+		while (x < WIN_WIDTH)
 		{
 			// floor
 			//all->floor.color = all->color_f.rgb;
-			all->win_r.buf[y][x] = all->color_f.rgb;
+			all->info.buf[y][x] = all->color_f.rgb;
 			//ceiling (symmetrical, at height - y - 1 instead of y)
 			//all->floor.color = all->color_c.rgb;
-			all->win_r.buf[all->win_r.y - y - 1][x] = all->color_c.rgb;
+			all->info.buf[WIN_HEIGHT - y - 1][x] = all->color_c.rgb;
 			x++;
 		}
 		y++;
@@ -155,7 +155,7 @@ void	ft_floor_casting(t_all *all)
 void	ft_set_camera_and_raydir_and_deltadist(t_all *all, int x)
 {
 	//calculate ray position and direction
-	all->ray.cameraX = 2 * x / (double)all->win_r.x - 1; //x-coordinate in camera space
+	all->ray.cameraX = 2 * x / (double)WIN_WIDTH - 1; //x-coordinate in camera space
 	all->ray.raydirX = all->player.dirX + all->player.planeX * all->ray.cameraX;
 	all->ray.raydirY = all->player.dirY + all->player.planeY * all->ray.cameraX;
 	//which box of the map we're in
@@ -221,14 +221,14 @@ void	ft_find_collision_with_wall(t_all *all)
 void	ft_calc_wall_drawing(t_all *all)
 {
 	//Calculate height of line to draw on screen
-	all->ray.lineheight = (int)(all->win_r.y / all->ray.perpwalldist);
+	all->ray.lineheight = (int)(WIN_HEIGHT / all->ray.perpwalldist);
 	//calculate lowest and highest pixel to fill in current stripe
-	all->ray.drawstart = -all->ray.lineheight / 2 + all->win_r.y / 2;
+	all->ray.drawstart = -all->ray.lineheight / 2 + WIN_HEIGHT / 2;
 	if(all->ray.drawstart < 0)
 		all->ray.drawstart = 0;
-	all->ray.drawend = all->ray.lineheight / 2 + all->win_r.y / 2;
-	if(all->ray.drawend >= all->win_r.y)
-		all->ray.drawend = all->win_r.y - 1;
+	all->ray.drawend = all->ray.lineheight / 2 + WIN_HEIGHT / 2;
+	if(all->ray.drawend >= WIN_HEIGHT)
+		all->ray.drawend = WIN_HEIGHT - 1;
 }
 
 void	ft_set_tex_for_each_direction(t_all *all)
@@ -257,7 +257,7 @@ void	ft_calc_raycasting(t_all *all)
 	// WALL CASTING
 //	ft_wall_casting(all);
 	x = 0;
-	while (x < all->win_r.x)
+	while (x < WIN_WIDTH)
 	{
 		ft_set_camera_and_raydir_and_deltadist(all, x);
 
@@ -279,32 +279,32 @@ void	ft_calc_raycasting(t_all *all)
 			all->ray.wallX = all->player.posX + all->ray.perpwalldist * all->ray.raydirX;
 		all->ray.wallX -= ft_floor(all->ray.wallX);
 		//x coordinate on the texture
-		all->tex.texX1 = (int)(all->ray.wallX * (double)(all->img.tex_width[all->tex.texnum]));
+		all->tex.texX1 = (int)(all->ray.wallX * (double)TEX_WIDTH);
 		if(all->ray.side == 0 && all->ray.raydirX > 0)
-			all->tex.texX1 = all->img.tex_width[all->tex.texnum] - all->tex.texX1 - 1;
+			all->tex.texX1 = TEX_WIDTH - all->tex.texX1 - 1;
 		if(all->ray.side == 1 && all->ray.raydirY < 0)
-			all->tex.texX1 = all->img.tex_width[all->tex.texnum] - all->tex.texX1 - 1;
+			all->tex.texX1 = TEX_WIDTH - all->tex.texX1 - 1;
 		// TODO: an integer-only bresenham or DDA like algorithm could make the texture coordinate stepping faster
 		// How much to increase the texture coordinate per screen pixel
-		all->tex.step = 1.0 * all->img.tex_height[all->tex.texnum] / all->ray.lineheight;
+		all->tex.step = 1.0 * TEX_HEIGHT / all->ray.lineheight;
 		// Starting texture coordinate
-		all->tex.texpos = (all->ray.drawstart - all->win_r.y / 2 + all->ray.lineheight / 2) * all->tex.step;
+		all->tex.texpos = (all->ray.drawstart - WIN_HEIGHT / 2 + all->ray.lineheight / 2) * all->tex.step;
 		y = all->ray.drawstart;
 		while (y < all->ray.drawend)
 		{
 			// Cast the texture coordinate to integer, and mask with (TEX_HEIGHT - 1) in case of overflow
-			all->tex.texY1 = (int)all->tex.texpos & (all->img.tex_height[all->tex.texnum] - 1);
+			all->tex.texY1 = (int)all->tex.texpos & (TEX_HEIGHT - 1);
 			all->tex.texpos += all->tex.step;
-			all->tex.color2 = all->info.texture[all->tex.texnum][all->img.tex_height[all->tex.texnum] * all->tex.texY1 + all->tex.texX1];
+			all->tex.color2 = all->info.texture[all->tex.texnum][TEX_HEIGHT * all->tex.texY1 + all->tex.texX1];
 			//make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
 			if(all->ray.side == 1)
 				all->tex.color2 = (all->tex.color2 >> 1) & 8355711;
-			all->win_r.buf[y][x] = all->tex.color2;
+			all->info.buf[y][x] = all->tex.color2;
 			y++;
 		}
 
 		//SET THE ZBUFFER FOR THE SPRITE CASTING
-		all->spr.zBuffer[x] = all->ray.perpwalldist; //perpendicular distance is used
+		all->info.zBuffer[x] = all->ray.perpwalldist; //perpendicular distance is used
 		x++;
 	}
 //	ft_sprite_casting();
@@ -338,44 +338,44 @@ void	ft_calc_raycasting(t_all *all)
 		all->spr.transformX = all->spr.invDet * (all->player.dirY * all->spr.spriteX - all->player.dirX * all->spr.spriteY);
 		all->spr.transformY = all->spr.invDet * (-all->player.planeY * all->spr.spriteX + all->player.planeX * all->spr.spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
 
-		all->spr.spriteScreenX = (int)((all->win_r.x / 2) * (1 + all->spr.transformX / all->spr.transformY));
+		all->spr.spriteScreenX = (int)((WIN_WIDTH / 2) * (1 + all->spr.transformX / all->spr.transformY));
 
 		all->spr.vMoveScreen = (int)(vMove / all->spr.transformY);
 
 		// スクリーン上のスプライトの高さ
-		all->spr.spriteHeight = (int)ft_absolute_value((all->win_r.y / all->spr.transformY) / vDiv);
+		all->spr.spriteHeight = (int)ft_absolute_value((WIN_HEIGHT / all->spr.transformY) / vDiv);
 
 		//calculate lowest and highest pixel to fill in current stripe
-		all->spr.drawStartY = -all->spr.spriteHeight / 2 + all->win_r.y / 2 + all->spr.vMoveScreen;
+		all->spr.drawStartY = -all->spr.spriteHeight / 2 + WIN_HEIGHT / 2 + all->spr.vMoveScreen;
 		if(all->spr.drawStartY < 0)
 			all->spr.drawStartY = 0;
-		all->spr.drawEndY = all->spr.spriteHeight / 2 + all->win_r.y / 2 + all->spr.vMoveScreen;
-		if(all->spr.drawEndY >= all->win_r.y)
-			all->spr.drawEndY = all->win_r.y - 1;
+		all->spr.drawEndY = all->spr.spriteHeight / 2 + WIN_HEIGHT / 2 + all->spr.vMoveScreen;
+		if(all->spr.drawEndY >= WIN_HEIGHT)
+			all->spr.drawEndY = WIN_HEIGHT - 1;
 
 		// スプライトの幅を計算
-		all->spr.spriteWidth = (int)ft_absolute_value((all->win_r.y / all->spr.transformY) / uDiv);
+		all->spr.spriteWidth = (int)ft_absolute_value((WIN_HEIGHT / all->spr.transformY) / uDiv);
 		
 		all->spr.drawStartX = -all->spr.spriteWidth / 2 + all->spr.spriteScreenX;
 		if(all->spr.drawStartX < 0)
 			all->spr.drawStartX = 0;
 		all->spr.drawEndX = all->spr.spriteWidth / 2 + all->spr.spriteScreenX;
-		if(all->spr.drawEndX >= all->win_r.x)
-			all->spr.drawEndX = all->win_r.x - 1;
+		if(all->spr.drawEndX >= WIN_WIDTH)
+			all->spr.drawEndX = WIN_WIDTH - 1;
 
 		stripe = all->spr.drawStartX;
 		while (stripe < all->spr.drawEndX)
 		{
-			all->spr.texX = (int)((256 * (stripe - (-all->spr.spriteWidth / 2 + all->spr.spriteScreenX)) * all->img.tex_width[4] / all->spr.spriteWidth) / 256);
-			if (all->spr.transformY > 0 && stripe > 0 && stripe < all->win_r.x && all->spr.transformY < all->spr.zBuffer[stripe])
+			all->spr.texX = (int)((256 * (stripe - (-all->spr.spriteWidth / 2 + all->spr.spriteScreenX)) * TEX_WIDTH / all->spr.spriteWidth) / 256);
+			if (all->spr.transformY > 0 && stripe > 0 && stripe < WIN_WIDTH && all->spr.transformY < all->info.zBuffer[stripe])
 			{
 				y = all->spr.drawStartY;
 				while (y < all->spr.drawEndY) //for every pixel of the current stripe
 				{
-					all->spr.d = (y-all->spr.vMoveScreen) * 256 - all->win_r.y * 128 + all->spr.spriteHeight * 128; //256 and 128 factors to avoid floats
-					all->spr.texY = ((all->spr.d * all->img.tex_height[4]) / all->spr.spriteHeight) / 256;
-					all->spr.color3 = all->info.texture[4][all->img.tex_width[4] * all->spr.texY + all->spr.texX]; //get current color from the texture
-					if((all->spr.color3 & 0x00FFFFFF) != 0) all->win_r.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
+					all->spr.d = (y-all->spr.vMoveScreen) * 256 - WIN_HEIGHT * 128 + all->spr.spriteHeight * 128; //256 and 128 factors to avoid floats
+					all->spr.texY = ((all->spr.d * TEX_HEIGHT) / all->spr.spriteHeight) / 256;
+					all->spr.color3 = all->info.texture[4][TEX_WIDTH * all->spr.texY + all->spr.texX]; //get current color from the texture
+					if((all->spr.color3 & 0x00FFFFFF) != 0) all->info.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
 					y++;
 				}
 			}
@@ -598,12 +598,13 @@ void	ft_raycasting(t_all *all)
 	mlx_get_screen_size(all->info.mlx, &all->win_r.screen_x, &all->win_r.screen_y);
 	ft_resize_win_size(all);
 	ft_init_buf_and_zbuffer(all);
+	
 	ft_set_pos_and_dir_and_plane(all);
 	ft_init_win_and_tex(all);
 	ft_load_texture(all);
-	if (!(all->info.win = mlx_new_window(all->info.mlx, all->win_r.x, all->win_r.y, "mlx")))
+	if (!(all->info.win = mlx_new_window(all->info.mlx, WIN_WIDTH, WIN_HEIGHT, "mlx")))
 		ft_put_error_and_exit("mlx_new_window failed\n", 2);
-	if (!(all->img.img = mlx_new_image(all->info.mlx, all->win_r.x, all->win_r.y)))
+	if (!(all->img.img = mlx_new_image(all->info.mlx, WIN_WIDTH, WIN_HEIGHT)))
 		ft_put_error_and_exit("mlx_new_image failed\n", 2);
 	if (!(all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian)))
 		ft_put_error_and_exit("mlx_get_data_addr failed\n", 2);
@@ -613,14 +614,14 @@ void	ft_raycasting(t_all *all)
 	mlx_loop(all->info.mlx);
 }
 
-/* void	ft_write_bmp(t_all *all)
+void	ft_write_bmp(t_all *all)
 {
 	all->info.mlx = mlx_init();
 	ft_set_pos_and_dir_and_plane(all);
 	ft_init_win_and_tex(all);
 	ft_load_texture(all);
-	all->img.img = mlx_new_image(all->info.mlx, all->win_r.x, all->win_r.y);
+	all->img.img = mlx_new_image(all->info.mlx, WIN_WIDTH, WIN_HEIGHT);
 	all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian);
 	ft_calc_raycasting(all);
 
-} */
+}

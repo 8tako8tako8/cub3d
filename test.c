@@ -1,68 +1,46 @@
 #include <stdio.h>
 #include <math.h>
-# define numSprites 10
 
-typedef	struct	s_sprite
+typedef struct  s_all
 {
-	double		x;
-	double		y;
+    int         r;
+    int         g;
+    int         b;
+    int         hex;
+}               t_all;
 
-}				t_sprite;
-
-double  ft_decimals(double value)
+void	print_dx_num(long dx, int base)
 {
-    double  ret_decimals;
-
-    ret_decimals = value - (int)value;
-    return ret_decimals;
+	if (dx < base)
+	{
+		write(1, number + dx, 1);
+	}
+	else
+	{
+		print_dx_num(dx / base, base);
+		print_dx_num(dx % base, base);
+	}
 }
 
-double  ft_floor(double value)
+void    ft_convert_hex(t_all *all)
 {
-    double  ret_int;
+    char    number[] = "0123456789BCDEF";
+    char    *hex_num;
 
-    if (value < 0)
-    {
-        if (value < value - ft_decimals(value))
-            ret_int = value - ft_decimals(value) - 1;
-        else
-            ret_int = (int)value;
-    }
-    else
-        ret_int = (int)value;
-    return (ret_int);
+    hex_num = (char *)malloc(9);
+    hex_num[8] = '\0';
+    printf
+
 }
 
 int main()
 {
-    double  i = 3.14;
-    double  j = -3.00;
+    t_all   all;
 
-    printf("%f, %f\n", floor(i), ft_floor(i));
-    printf("%f, %f\n", floor(j), ft_floor(j));
+    all.r = 10;
+    all.g = 100;
+    all.b = 255;
+    ft_convert_hex(&all);
 
-/*     t_sprite    sprite[numSprites];
-    int         i = 0;
-
-    while (i < 3)
-    {
-        if (i == 0)
-        {
-            sprite[i].x = 2.0;
-            sprite[i].y = 1.0;
-        }
-        else
-        {
-            sprite[i].x = 1.0;
-            sprite[i].y = 1.0;
-        }
-        i++;
-    }
-    i = 0;
-    while (i < 3)
-    {
-        printf("x: %f, y: %f\n", sprite[i].x, sprite[i].y);
-        i++;
-    } */
     return 0;
 }

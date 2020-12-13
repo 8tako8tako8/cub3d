@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   cub3d.c                                            :+:      :+:    :+:   */
+/*   cub3d_1213.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/19 17:50:57 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/12 23:07:49 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/13 17:41:34 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "cub3d_1213.h"
 
 t_sprlst	*ft_newspr(double x, double y)
 {
@@ -573,7 +573,6 @@ void	ft_init_all(t_all *all)
 	all->info.key_d = 0;
 	all->info.key_esc = 0;
 
-	all->img.i = 0;
 }
 
 void	ft_init_map(t_all *all)
@@ -706,8 +705,8 @@ int main(int argc, char **argv)
 		ft_put_success_or_error("Start drawing\n", 1);//Success
 		if (argc == 2)
 			ft_raycasting(&all);
-/* 		else if (argc == 3)
-			ft_write_bmp(&all); */
+		else if (argc == 3)
+			ft_write_bmp(&all);
 	}
 	else
 		ft_put_success_or_error("Invalid comandline arguments\nYou should do the following:\n./cub3d *.cub  or  ./cub3d *.cub --save\n", 2);
