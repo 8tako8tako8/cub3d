@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/13 16:38:23 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/15 18:16:18 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,7 +121,26 @@ void	ft_draw_window(t_all *all)
 		x = 0;
 		while (x < all->win_r.x)
 		{
-			all->img.data[y * all->win_r.x + x] = all->win_r.buf[y][x];
+			all->img.data[all->img.size_l / (all->img.bpp / 8) * y + x] = all->win_r.buf[y][x];
+			x++;
+		}
+		y++;
+	}
+	mlx_put_image_to_window(all->info.mlx, all->info.win, all->img.img, 0, 0);
+}
+
+void	ft_draw_window_save(t_all *all)
+{
+	int		x;
+	int		y;
+
+	y = 0;
+	while (y < all->win_r.y)
+	{
+		x = 0;
+		while (x < all->win_r.x)
+		{
+			all->img.data[all->win_r.x * y + x] = all->win_r.buf[y][x];
 			x++;
 		}
 		y++;
@@ -155,14 +174,13 @@ void	ft_floor_casting(t_all *all)
 void	ft_set_camera_and_raydir_and_deltadist(t_all *all, int x)
 {
 	//calculate ray position and direction
-	all->ray.cameraX = 2 * x / (double)all->win_r.x - 1; //x-coordinate in camera space
-	all->ray.raydirX = all->player.dirX + all->player.planeX * all->ray.cameraX;
-	all->ray.raydirY = all->player.dirY + all->player.planeY * all->ray.cameraX;
+	all->ray.cameraX = 2 * x / (double)all->win_r.x - 1;//現在のx座標が表すカメラ平面上のx座標
+	all->ray.raydirX = all->player.dirX + all->player.planeX * all->ray.cameraX;//光線の方向ベクトル
+	all->ray.raydirY = all->player.dirY + all->player.planeY * all->ray.cameraX;//光線の方向ベクトル
 	//which box of the map we're in
-	all->ray.mapX = (int)all->player.posX;
-	all->ray.mapY = (int)all->player.posY;
+	all->ray.mapX = (int)all->player.posX;//mapのどこにいるか
+	all->ray.mapY = (int)all->player.posY;//mapのどこにいるか
 
-	//length of ray from one x or y-side to next x or y-side
 	all->ray.deltadistX = ft_absolute_value(1 / all->ray.raydirX);
 	all->ray.deltadistY = ft_absolute_value(1 / all->ray.raydirY);
 }
@@ -200,16 +218,15 @@ void	ft_find_collision_with_wall(t_all *all)
 		{
 			all->ray.sidedistX += all->ray.deltadistX;
 			all->ray.mapX += all->ray.stepX;
-			all->ray.side = 0;
+			all->ray.side = 0;//x面でヒットした時は0
 		}
 		else
 		{
 			all->ray.sidedistY += all->ray.deltadistY;
 			all->ray.mapY += all->ray.stepY;
-			all->ray.side = 1;
+			all->ray.side = 1;//y面でヒットした時は1
 		}
-		//Check if ray has hit a wall
-		if(all->map.map[all->ray.mapY][all->ray.mapX] == 1)
+		if(all->map.map[all->ray.mapY][all->ray.mapX] == 1)//1のとき壁
 			all->ray.hit = 1;
 	}
 	if(all->ray.side == 0)
@@ -220,15 +237,14 @@ void	ft_find_collision_with_wall(t_all *all)
 
 void	ft_calc_wall_drawing(t_all *all)
 {
-	//Calculate height of line to draw on screen
-	all->ray.lineheight = (int)(all->win_r.y / all->ray.perpwalldist);
+	all->ray.lineheight = (int)(all->win_r.y / all->ray.perpwalldist);//描画する壁の高さ
 	//calculate lowest and highest pixel to fill in current stripe
 	all->ray.drawstart = -all->ray.lineheight / 2 + all->win_r.y / 2;
 	if(all->ray.drawstart < 0)
-		all->ray.drawstart = 0;
+		all->ray.drawstart = 0;//画面外は0
 	all->ray.drawend = all->ray.lineheight / 2 + all->win_r.y / 2;
 	if(all->ray.drawend >= all->win_r.y)
-		all->ray.drawend = all->win_r.y - 1;
+		all->ray.drawend = all->win_r.y - 1;//画面外はHEIGHT-1
 }
 
 void	ft_set_tex_for_each_direction(t_all *all)
@@ -261,24 +277,28 @@ void	ft_calc_raycasting(t_all *all)
 	{
 		ft_set_camera_and_raydir_and_deltadist(all, x);
 
-		all->ray.hit = 0; //was there a wall hit?
+		all->ray.hit = 0;//壁に当たったか？初期化
 
-		ft_set_step_and_sidedist(all);
+		ft_set_step_and_sidedist(all);//stepとsidedistの初期値を求める。
 
-		ft_find_collision_with_wall(all);
+		ft_find_collision_with_wall(all);//DDAアルゴリズムにより1マスずつ壁があるか見ていく
 
-		//Calculate distance of perpendicular ray
 		ft_calc_wall_drawing(all);
 
 		ft_set_tex_for_each_direction(all);
 
-		//calculate value of wallX
+		/* wallXは、壁の整数座標だけでなく、壁がヒットした正確な値を表す。
+		これは、使用する必要のあるテクスチャのx座標を知るために必要。
+		これは、最初に正確なx座標またはy座標を計算し、
+		次に壁の整数値を差し引くことによって計算される。
+		wallXと呼ばれていても、side==1の場合、実際には壁のy座標ですが、
+		常にテクスチャのx座標であることに注意する。 */
 		if (all->ray.side == 0)
 			all->ray.wallX = all->player.posY + all->ray.perpwalldist * all->ray.raydirY;
 		else
 			all->ray.wallX = all->player.posX + all->ray.perpwalldist * all->ray.raydirX;
 		all->ray.wallX -= ft_floor(all->ray.wallX);
-		//x coordinate on the texture
+		//テクスチャのx座標
 		all->tex.texX1 = (int)(all->ray.wallX * (double)(all->img.tex_width[all->tex.texnum]));
 		if(all->ray.side == 0 && all->ray.raydirX > 0)
 			all->tex.texX1 = all->img.tex_width[all->tex.texnum] - all->tex.texX1 - 1;
@@ -293,12 +313,13 @@ void	ft_calc_raycasting(t_all *all)
 		while (y < all->ray.drawend)
 		{
 			// Cast the texture coordinate to integer, and mask with (TEX_HEIGHT - 1) in case of overflow
-			all->tex.texY1 = (int)all->tex.texpos & (all->img.tex_height[all->tex.texnum] - 1);
+			//all->tex.texY1 = (int)all->tex.texpos & (all->img.tex_height[all->tex.texnum] - 1);
+			all->tex.texY1 = (int)all->tex.texpos;
 			all->tex.texpos += all->tex.step;
-			all->tex.color2 = all->info.texture[all->tex.texnum][all->img.tex_height[all->tex.texnum] * all->tex.texY1 + all->tex.texX1];
+			all->tex.color2 = all->info.texture[all->tex.texnum][(all->img.tex_height[all->tex.texnum]) * (all->tex.texY1) + all->tex.texX1];
 			//make color darker for y-sides: R, G and B byte each divided through two with a "shift" and an "and"
-			if(all->ray.side == 1)
-				all->tex.color2 = (all->tex.color2 >> 1) & 8355711;
+/* 			if(all->ray.side == 1)
+				all->tex.color2 = (all->tex.color2 >> 1) & 8355711; */
 			all->win_r.buf[y][x] = all->tex.color2;
 			y++;
 		}
@@ -375,7 +396,7 @@ void	ft_calc_raycasting(t_all *all)
 					all->spr.d = (y-all->spr.vMoveScreen) * 256 - all->win_r.y * 128 + all->spr.spriteHeight * 128; //256 and 128 factors to avoid floats
 					all->spr.texY = ((all->spr.d * all->img.tex_height[4]) / all->spr.spriteHeight) / 256;
 					all->spr.color3 = all->info.texture[4][all->img.tex_width[4] * all->spr.texY + all->spr.texX]; //get current color from the texture
-					if((all->spr.color3 & 0x00FFFFFF) != 0) all->win_r.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
+					if((all->spr.color3 & 0xFFFFFF) != 0) all->win_r.buf[y][stripe] = all->spr.color3; //paint pixel if it isn't black, black is the invisible color
 					y++;
 				}
 			}
@@ -460,7 +481,7 @@ void	ft_load_image(t_all *all, char *path)
 	static int	i;
 
 	if (!(all->img.img = mlx_xpm_file_to_image(all->info.mlx, path, &all->img.img_width, &all->img.img_height)))
-		ft_put_error_and_exit("mlx_xpm_file_to_image failed\n", 2);
+		ft_put_error_and_exit("Invalid path\n", 2);
 	if (!(all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian)))
 		ft_put_error_and_exit("mlx_get_data_addr failed\n", 2);
 	if (!(all->info.texture[i] = (int *)malloc(sizeof(int) * (all->img.img_height * all->img.img_width))))
@@ -488,8 +509,8 @@ void	ft_load_image(t_all *all, char *path)
 void	ft_load_texture(t_all *all)
 {
 	ft_load_image(all, all->path_tex.west);
-	ft_load_image(all, all->path_tex.south);
 	ft_load_image(all, all->path_tex.north);
+	ft_load_image(all, all->path_tex.south);
 	ft_load_image(all, all->path_tex.east);
 	ft_load_image(all, all->path_tex.sprite);
 }
@@ -598,29 +619,80 @@ void	ft_raycasting(t_all *all)
 	mlx_get_screen_size(all->info.mlx, &all->win_r.screen_x, &all->win_r.screen_y);
 	ft_resize_win_size(all);
 	ft_init_buf_and_zbuffer(all);
+	
 	ft_set_pos_and_dir_and_plane(all);
 	ft_init_win_and_tex(all);
 	ft_load_texture(all);
-	if (!(all->info.win = mlx_new_window(all->info.mlx, all->win_r.x, all->win_r.y, "mlx")))
+	if (!(all->info.win = mlx_new_window(all->info.mlx, all->win_r.x, all->win_r.y, "cub3d")))
 		ft_put_error_and_exit("mlx_new_window failed\n", 2);
 	if (!(all->img.img = mlx_new_image(all->info.mlx, all->win_r.x, all->win_r.y)))
 		ft_put_error_and_exit("mlx_new_image failed\n", 2);
 	if (!(all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian)))
 		ft_put_error_and_exit("mlx_get_data_addr failed\n", 2);
+	ft_put_success_or_error("Start drawing\n", 1);//Success
 	mlx_loop_hook(all->info.mlx, &main_loop, all);
 	mlx_hook(all->info.win, X_EVENT_KEY_PRESS, 0, &ft_press_key, all);
 	mlx_hook(all->info.win, X_EVENT_KEY_RELEASE, 0, &ft_release_key, all);
 	mlx_loop(all->info.mlx);
 }
 
-/* void	ft_write_bmp(t_all *all)
+void	ft_write_bmp_header(t_all *all, int fd, int filesize)
 {
-	all->info.mlx = mlx_init();
+	unsigned char	fileheader[54];
+
+	ft_bzero(fileheader, 54);
+	fileheader[0] = (unsigned char)('B');
+	fileheader[1] = (unsigned char)('M');
+	fileheader[2] = (unsigned char)(filesize);
+	fileheader[3] = (unsigned char)(filesize >> 8);
+	fileheader[4] = (unsigned char)(filesize >> 16);
+	fileheader[5] = (unsigned char)(filesize >> 24);
+	fileheader[10] = (unsigned char)(54);
+	fileheader[14] = (unsigned char)(40);
+	fileheader[18] = (unsigned char)(all->win_r.x);
+	fileheader[19] = (unsigned char)(all->win_r.x >> 8);
+	fileheader[20] = (unsigned char)(all->win_r.x >> 16);
+	fileheader[21] = (unsigned char)(all->win_r.x >> 24);
+	fileheader[22] = (unsigned char)((-1) * all->win_r.y);
+	fileheader[23] = (unsigned char)((-1) * all->win_r.y >> 8);
+	fileheader[24] = (unsigned char)((-1) * all->win_r.y >> 16);
+	fileheader[25] = (unsigned char)((-1) * all->win_r.y >> 24);
+	fileheader[26] = (unsigned char)(1);
+	fileheader[28] = (unsigned char)(32);
+	write(fd, fileheader, 54);
+}
+
+void	ft_save_bmp(t_all *all)
+{
+	int		filesize;
+	int		fd;
+
+	filesize = 54 + (4 * all->win_r.x * all->win_r.y);
+	if ((fd = open("cub3d.bmp", O_WRONLY | O_CREAT | O_TRUNC | O_APPEND, S_IRWXU)) < 0)
+		ft_put_error_and_exit("Cannot create bmp\n", 2);
+	ft_write_bmp_header(all, fd, filesize);
+	write(fd, (char *)all->img.data, 4 * all->win_r.x * all->win_r.y);
+	close(fd);
+	exit(0);
+}
+
+void	ft_write_bmp(t_all *all)
+{
+	if (!(all->info.mlx = mlx_init()))
+		ft_put_error_and_exit("mlx_init failed\n", 2);
+	mlx_get_screen_size(all->info.mlx, &all->win_r.screen_x, &all->win_r.screen_y);
+	ft_resize_win_size(all);
+	ft_init_buf_and_zbuffer(all);
 	ft_set_pos_and_dir_and_plane(all);
 	ft_init_win_and_tex(all);
 	ft_load_texture(all);
-	all->img.img = mlx_new_image(all->info.mlx, all->win_r.x, all->win_r.y);
-	all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian);
+	if (!(all->info.win = mlx_new_window(all->info.mlx, all->win_r.x, all->win_r.y, "cub3d")))
+		ft_put_error_and_exit("mlx_new_window failed\n", 2);
+	if (!(all->img.img = mlx_new_image(all->info.mlx, all->win_r.x, all->win_r.y)))
+		ft_put_error_and_exit("mlx_new_image failed\n", 2);
+	if (!(all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian)))
+		ft_put_error_and_exit("mlx_get_data_addr failed\n", 2);
 	ft_calc_raycasting(all);
-
-} */
+	ft_draw_window_save(all);
+	ft_save_bmp(all);
+}

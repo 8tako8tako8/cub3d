@@ -1,4 +1,4 @@
-R 10000 1080
+R 640 480
 NO ./textures/eagle.xpm
 SO ./textures/greystone.xpm
 WE ./textures/redbrick.xpm
@@ -10,7 +10,7 @@ C 225,30,0
 
 111111111111
 100000000001
-100000000001
+10000000000
 100000000001
 10000N000001
 100000000001

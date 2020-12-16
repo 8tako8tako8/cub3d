@@ -1,11 +1,11 @@
-R 1920 1080
+R 500 500
 NO ./textures/eagle.xpm
 SO ./textures/greystone.xpm
 WE ./textures/redbrick.xpm
 EA ./textures/purplestone.xpm
-test
+
 S ./textures/barrel.xpm
-F 220,100,0
+F 220,100,4294967296
 C 225,30,0
 
 111111111111

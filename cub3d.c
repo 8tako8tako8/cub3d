@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/19 17:50:57 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/12 23:07:49 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/15 22:00:16 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,27 +88,67 @@ void	ft_put_error_and_exit(char *s, int fd)
 	exit(0);
 }
 
+static int	check_int_overflow(int sign, const char *str)
+{
+	int		digit;
+
+	digit = 0;
+	while (ft_isdigit(str[digit]))
+		digit++;
+	if (digit > 10)
+		return (-1);
+	if ((sign == 1 && ft_strncmp(str, "2147483647", 19) > 0)
+		&& digit == 10)
+		return (-1);
+	if ((sign == -1 && ft_strncmp(str, "2147483648", 19) > 0)
+		&& digit == 10)
+		return (-1);
+	return (1);
+}
+
+int		ft_atoi2(const char *str)
+{
+	long long		number;
+	int				sign;
+	int				i;
+
+	number = 0;
+	sign = 1;
+	i = 0;
+	while (('\t' <= str[i] && str[i] <= '\r') || str[i] == ' ')
+		i++;
+	if (str[i] == '-')
+		sign = -1;
+	if (str[i] == '+' || str[i] == '-')
+		i++;
+	if (check_int_overflow(sign, str + i) == -1)
+		return (check_int_overflow(sign, str + i));
+	while (ft_isdigit(str[i]))
+	{
+		number = number * 10;
+		number += str[i] - '0';
+		i++;
+	}
+	return (number * sign);
+}
+
 void	ft_get_win(t_all *all, char **line)
 {
 	int		i;
 
 	i = 2;
-	all->win_r.x = ft_atoi(*line + i);
+	all->win_r.x = ft_atoi2(*line + i);
 	while ((*line)[i] == ' ')
 		i++;
 	while (ft_isdigit((*line)[i]))
 		i++;
-	all->win_r.y = ft_atoi(*line + i);
+	all->win_r.y = ft_atoi2(*line + i);
 	while ((*line)[i] == ' ')
 		i++;
 	while (ft_isdigit((*line)[i]))
 		i++;
 	while ((*line)[i] == ' ')
 		i++;
-	if (all->win_r.x >= 10000)
-		all->win_r.x = 9999;
-	if (all->win_r.y >= 10000)
-		all->win_r.y = 9999;
 	if ((*line)[i] || all->win_r.x <= 0 || all->win_r.y <= 0)
 	{
 		ft_put_error_and_exit("Invalid R\n", 2);		
@@ -122,7 +162,7 @@ void	ft_get_floor(t_all *all, char **line)
 
 	count = 0;
 	i = 2;
-	all->color_f.r = ft_atoi(*line + i);
+	all->color_f.r = ft_atoi2(*line + i);
 	while ((*line)[i] == ' ')
 		i++;
 	if (ft_isdigit((*line)[i]))
@@ -131,14 +171,14 @@ void	ft_get_floor(t_all *all, char **line)
 		i++;
 	if ((*line)[i] == ',')
 		i++;
-	all->color_f.g = ft_atoi(*line + i);
+	all->color_f.g = ft_atoi2(*line + i);
 	if (ft_isdigit((*line)[i]))
 		count++;
 	while (ft_isdigit((*line)[i]))
 		i++;
 	if ((*line)[i] == ',')
 		i++;
-	all->color_f.b = ft_atoi(*line + i);
+	all->color_f.b = ft_atoi2(*line + i);
 	if (ft_isdigit((*line)[i]))
 		count++;
 	while (ft_isdigit((*line)[i]))
@@ -159,7 +199,7 @@ void	ft_get_ceiling(t_all *all, char **line)
 
 	count = 0;
 	i = 2;
-	all->color_c.r = ft_atoi(*line + i);
+	all->color_c.r = ft_atoi2(*line + i);
 	while ((*line)[i] == ' ')
 		i++;
 	if (ft_isdigit((*line)[i]))
@@ -168,14 +208,14 @@ void	ft_get_ceiling(t_all *all, char **line)
 		i++;
 	if ((*line)[i] == ',')
 		i++;
-	all->color_c.g = ft_atoi(*line + i);
+	all->color_c.g = ft_atoi2(*line + i);
 	if (ft_isdigit((*line)[i]))
 		count++;
 	while (ft_isdigit((*line)[i]))
 		i++;
 	if ((*line)[i] == ',')
 		i++;
-	all->color_c.b = ft_atoi(*line + i);
+	all->color_c.b = ft_atoi2(*line + i);
 	if (ft_isdigit((*line)[i]))
 		count++;
 	while (ft_isdigit((*line)[i]))
@@ -193,7 +233,15 @@ char	*ft_get_path(t_all *all, char **line)
 {
 	char		*path;
 	char		**tmp;
+	int			i;
 
+	i = 2;
+	while ((('\t' <= (*line)[i]) && ((*line)[i] <= '\r')) || ((*line)[i] == ' '))
+		i++;
+	if (!((*line)[i]))
+	{
+		ft_put_error_and_exit("There is no PATH\n", 2);
+	}
 	if (!(tmp = ft_split(*line, ' ')))
 	{
 		ft_put_error_and_exit("Invalid PATH\n", 2);
@@ -220,8 +268,6 @@ void	ft_parse_line_r(t_all *all, char **line)
 	if (all->cubflag.r == 0)
 	{
 		ft_get_win(all, line);
-		DI(all->win_r.x);
-		DI(all->win_r.y);
 		all->cubflag.r = 1;
 	}
 	else
@@ -235,7 +281,6 @@ void	ft_parse_line_no(t_all *all, char **line)
 	if (all->cubflag.no == 0)
 	{
 		all->path_tex.north = ft_get_path(all, line);
-		DS(all->path_tex.north);
 		all->cubflag.no = 1;
 	}
 	else
@@ -249,7 +294,6 @@ void	ft_parse_line_so(t_all *all, char **line)
 	if (all->cubflag.so == 0)
 	{
 		all->path_tex.south = ft_get_path(all, line);
-		DS(all->path_tex.south);
 		all->cubflag.so = 1;
 	}
 	else
@@ -263,7 +307,6 @@ void	ft_parse_line_we(t_all *all, char **line)
 	if (all->cubflag.we == 0)
 	{
 		all->path_tex.west = ft_get_path(all, line);
-		DS(all->path_tex.west);
 		all->cubflag.we = 1;
 	}
 	else
@@ -277,7 +320,6 @@ void	ft_parse_line_ea(t_all *all, char **line)
 	if (all->cubflag.ea == 0)
 	{
 		all->path_tex.east = ft_get_path(all, line);
-		DS(all->path_tex.east);
 		all->cubflag.ea = 1;
 	}
 	else
@@ -291,7 +333,6 @@ void	ft_parse_line_s(t_all *all, char **line)
 	if (all->cubflag.s == 0)
 	{
 		all->path_tex.sprite = ft_get_path(all, line);
-		DS(all->path_tex.sprite);
 		all->cubflag.s = 1;
 	}
 	else
@@ -311,9 +352,6 @@ void	ft_parse_line_f(t_all *all, char **line)
 	if (all->cubflag.f == 0)
 	{
 		ft_get_floor(all, line);
-		DI(all->color_f.r);
-		DI(all->color_f.g);
-		DI(all->color_f.b);
 		all->cubflag.f = 1;
 	}
 	else
@@ -327,9 +365,6 @@ void	ft_parse_line_c(t_all *all, char **line)
 	if (all->cubflag.c == 0)
 	{
 		ft_get_ceiling(all, line);
-		DI(all->color_c.r);
-		DI(all->color_c.g);
-		DI(all->color_c.b);
 		all->cubflag.c = 1;
 	}
 	else
@@ -370,10 +405,10 @@ void	ft_parse_map(t_all *all, char **line)
 			ft_lstadd_back_ex(&(all->sprlst), ft_newspr(j + 1.5, i + 1.5));
 			all->map.charmap[i + 1][j + 1] = (*line)[j];
 		}
-		else if ((*line)[j] == ' ')
-			all->map.charmap[i + 1][j + 1] = '1';
-		else
+		else if ((*line)[j] == '0' || (*line)[j] == '1' || (*line)[j] == ' ')
 			all->map.charmap[i + 1][j + 1] = (*line)[j];
+		else
+			ft_put_error_and_exit("Invalid map\n", 2);
 		j++;
 	}
 	i++;
@@ -449,17 +484,38 @@ int		ft_ismap(t_all *all, char *line)
 	return (0);
 }
 
+int		ft_isspace(char c)
+{
+	if (('\t' <= c && c <= '\r') || c == ' ')
+		return (1);
+	return (0);
+}
+
 int		ft_check_after_map(t_all *all, char *line)
 {
 	int		i;
 
 	i = 0;
 	if (!line)
-		return (0);
+		return (1);
 	while (line[i])
 	{
-		if (line[i] != ' ')
+		if (!ft_isspace(line[i]))
 			return (-1);
+		i++;
+	}
+	return (1);
+}
+
+int		ft_isonlyspace(char **line)
+{
+	int		i;
+
+	i = 0;
+	while ((*line)[i] != '\0')
+	{
+		if (!ft_isspace((*line)[i]))
+			return (0);
 		i++;
 	}
 	return (1);
@@ -486,11 +542,15 @@ void	ft_parse_line(t_all *all, char **line)
 	else if (ft_ismap(all, *line))
 	{
 		all->map.start = 1;
+		if (all->map.end == 1)
+		{
+			ft_put_error_and_exit("Invalid map\n", 2);
+		}
 		if (!all->cubflag.r || !all->cubflag.no || !all->cubflag.so
 			|| !all->cubflag.we || !all->cubflag.ea
 			|| !all->cubflag.s || !all->cubflag.f || !all->cubflag.c)
 		{
-			ft_put_error_and_exit("Failed to read file\n", 2);
+			ft_put_error_and_exit("All elements are needed (R,NO,SO,WE,EA,S,F,C)\n", 2);
 		}
 		ft_parse_map(all, line);
 	}
@@ -499,6 +559,10 @@ void	ft_parse_line(t_all *all, char **line)
 	else if (all->map.start == 1 && all->map.end == 1 && ft_check_after_map(all, *line) == -1)
 	{
 		ft_put_error_and_exit("Map is not at the end\n", 2);
+	}
+	else if (!ft_isonlyspace(line))
+	{
+		ft_put_error_and_exit("Neither element nor map\n", 2);
 	}
 }
 
@@ -518,8 +582,6 @@ void	ft_read_cub(t_all *all, int fd)
 	}
 	ft_parse_line(all, &line);
 	free(line);
-	DI(all->start_point.x);
-	DI(all->start_point.y);
 	ft_putmap(all);
 }
 
@@ -573,7 +635,6 @@ void	ft_init_all(t_all *all)
 	all->info.key_d = 0;
 	all->info.key_esc = 0;
 
-	all->img.i = 0;
 }
 
 void	ft_init_map(t_all *all)
@@ -590,7 +651,7 @@ void	ft_init_map(t_all *all)
 			if (i == 0 || i == MAP_HEIGHT - 1 || j == 0 || j == MAP_WIDTH - 1)
 				all->map.charmap[i][j] = 'x';
 			else
-				all->map.charmap[i][j] = ' ';			
+				all->map.charmap[i][j] = '4';			
 			j++;
 		}
 		i++;
@@ -603,13 +664,21 @@ void	ft_flood_fill_recursion(t_all *all, int x, int y)
 		return ;
 	if (x > MAP_WIDTH - 1 || y > MAP_HEIGHT - 1)
 		return ;
-	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' && all->map.charmap[y][x] != '1' && all->map.charmap[y][x] != '2' && all->map.charmap[y][x] != 'o')
+	if (all->map.charmap[y][x] == ' ')
+	{
+		ft_put_error_and_exit("There is space in the walking range\n", 2);
+	}
+	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' && all->map.charmap[y][x] != '1' && all->map.charmap[y][x] != '2' && all->map.charmap[y][x] != 'o' && all->map.charmap[y][x] != '@')
 	{
 		ft_put_error_and_exit("Map is not closed\n", 2);
 	}
-	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' )
+
+	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' && all->map.charmap[y][x] != '2')
 		return ;
-	all->map.charmap[y][x] = 'o';
+	if (all->map.charmap[y][x] == '2')
+		all->map.charmap[y][x] = '@';
+	else
+		all->map.charmap[y][x] = 'o';
 	ft_flood_fill_recursion(all, x + 1, y);
 	ft_flood_fill_recursion(all, x - 1, y);
 	ft_flood_fill_recursion(all, x, y + 1);
@@ -645,7 +714,7 @@ void	ft_convert_map_char_to_int(t_all *all)
 		{
 			if (all->map.charmap[i][j] == 'o')
 				all->map.map[i][j] = 0;
-			else if (all->map.charmap[i][j] == '2')
+			else if (all->map.charmap[i][j] == '@')
 				all->map.map[i][j] = 2;
 			else
 				all->map.map[i][j] = 1;
@@ -685,7 +754,6 @@ int main(int argc, char **argv)
 	{
 		if (argc == 3)
 			all.save = 1;
-		DI(all.save);
 		ft_init_all(&all);
 		ft_init_map(&all);
 		if ((fd = open(argv[1], O_RDONLY)) == -1)
@@ -703,11 +771,11 @@ int main(int argc, char **argv)
 		ft_print_map(&all);
 		all.spr.number = ft_lstsize_ex(all.sprlst);
 		close(fd);
-		ft_put_success_or_error("Start drawing\n", 1);//Success
+
 		if (argc == 2)
 			ft_raycasting(&all);
-/* 		else if (argc == 3)
-			ft_write_bmp(&all); */
+		else if (argc == 3)
+			ft_write_bmp(&all);
 	}
 	else
 		ft_put_success_or_error("Invalid comandline arguments\nYou should do the following:\n./cub3d *.cub  or  ./cub3d *.cub --save\n", 2);
