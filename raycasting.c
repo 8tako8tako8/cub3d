@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/19 22:18:10 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/20 01:32:34 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -182,7 +182,7 @@ int		 ft_release_key(int key, t_all *all)
 	return (0);
 }
 
-int		ft_destroy_win(int key, t_all *all)
+int		ft_destroy_win(t_all *all)
 {
 /* 	ft_lstclear_ex(&(all->sprlst));
 	ft_free1(all->win_r.buf, all->win_r.y);
@@ -294,7 +294,7 @@ void	ft_calc_sprite_tex(t_all *all)
 	}
 }
 
-void	ft_calc_sprite_drawing(t_all *all, int *i)
+void	ft_calc_sprite_drawing(t_all *all)
 {
 	// スクリーン上のスプライトの高さ
 	all->spr.spriteHeight = (int)ft_absolute_value((all->win_r.y / all->spr.transformY) / vDiv);
@@ -350,7 +350,6 @@ void	ft_store_lst_in_array(t_all *all)
 void	ft_sprite_casting(t_all *all)
 {
 	int		i;
-	int		y;
 	
 	//遠いスプライトから順に配列に格納
 	all->sprlst = ft_lst_merge_sort(all->sprlst, all->player.posX, all->player.posY);
@@ -359,7 +358,7 @@ void	ft_sprite_casting(t_all *all)
 	while (i < all->spr.number)
 	{
 		ft_set_elements_for_sprite_drawing(all, &i);
-		ft_calc_sprite_drawing(all, &i);
+		ft_calc_sprite_drawing(all);
 		ft_calc_sprite_tex(all);			
 		i++;
 	}

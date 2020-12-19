@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/19 17:50:57 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/19 21:22:10 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/20 01:30:40 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -400,7 +400,7 @@ void	ft_get_ceiling(t_all *all, char **line)
 	}
 }
 
-char	*ft_get_path(t_all *all, char **line)
+char	*ft_get_path(char **line)
 {
 	char		*path;
 	char		**tmp;
@@ -452,7 +452,7 @@ void	ft_parse_line_no(t_all *all, char **line)
 {
 	if (all->cubflag.no == 0)
 	{
-		all->path_tex.north = ft_get_path(all, line);
+		all->path_tex.north = ft_get_path(line);
 		all->cubflag.no = 1;
 	}
 	else
@@ -465,7 +465,7 @@ void	ft_parse_line_so(t_all *all, char **line)
 {
 	if (all->cubflag.so == 0)
 	{
-		all->path_tex.south = ft_get_path(all, line);
+		all->path_tex.south = ft_get_path(line);
 		all->cubflag.so = 1;
 	}
 	else
@@ -478,7 +478,7 @@ void	ft_parse_line_we(t_all *all, char **line)
 {
 	if (all->cubflag.we == 0)
 	{
-		all->path_tex.west = ft_get_path(all, line);
+		all->path_tex.west = ft_get_path(line);
 		all->cubflag.we = 1;
 	}
 	else
@@ -491,7 +491,7 @@ void	ft_parse_line_ea(t_all *all, char **line)
 {
 	if (all->cubflag.ea == 0)
 	{
-		all->path_tex.east = ft_get_path(all, line);
+		all->path_tex.east = ft_get_path(line);
 		all->cubflag.ea = 1;
 	}
 	else
@@ -504,7 +504,7 @@ void	ft_parse_line_s(t_all *all, char **line)
 {
 	if (all->cubflag.s == 0)
 	{
-		all->path_tex.sprite = ft_get_path(all, line);
+		all->path_tex.sprite = ft_get_path(line);
 		all->cubflag.s = 1;
 	}
 	else
@@ -616,7 +616,7 @@ int		ft_ismap(t_all *all, char *line)
 
 //-------------------- read cub -----------------------------------
 
-int		ft_check_after_map(t_all *all, char *line)
+int		ft_check_after_map(char *line)
 {
 	int		i;
 
@@ -666,7 +666,7 @@ void	ft_parse_line(t_all *all, char **line)
 		ft_check_element_and_parse_map(all, line);
 	else if (all->map.start == 1 && all->map.end == 0)
 		all->map.end = 1;
-	else if (all->map.start == 1 && all->map.end == 1 && ft_check_after_map(all, *line) == -1)
+	else if (all->map.start == 1 && all->map.end == 1 && ft_check_after_map(*line) == -1)
 		ft_put_error_and_exit("Map is not at the end\n", 2);
 	else if (!ft_isonlyspace(line))
 		ft_put_error_and_exit("Neither element nor map\n", 2);
