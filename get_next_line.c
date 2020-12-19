@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:56:16 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/11/12 21:56:28 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/16 21:48:08 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ int		ft_stdin_or_read_file(char **line, char **save, int fd)
 	char		*buf;
 
 	flag = 0;
-	if (!(buf = (char *)malloc(BUFFER_SIZE + 1)))
+	if (!(buf = (char *)malloc((size_t)BUFFER_SIZE + 1)))
 		return (-1);
 	while (flag == 0 && (read_size = read(fd, buf, BUFFER_SIZE)) > 0)
 	{

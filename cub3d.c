@@ -6,11 +6,192 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/19 17:50:57 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/15 22:00:16 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/19 21:22:10 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "cub3d.h"
+
+/* void	ft_print_map(t_all *all)
+{
+	int		i, j;
+
+	i = 0;
+	while (i < MAP_HEIGHT)
+	{
+		j = 0;
+		while (j < MAP_WIDTH)
+		{
+			if (all->map.map[i][j] == 0)
+				printf("\x1b[41m%d\x1b[m", all->map.map[i][j]);
+			else
+				printf("%d", all->map.map[i][j]);
+			j++;
+		}
+		printf("\n");
+		i++;
+	}
+} */
+
+/* void	ft_putmap(t_all *all)
+{
+	int			i;
+	int			j;
+
+	i = 0;
+	while (i < MAP_HEIGHT)
+	{
+		j = 0;
+		while (j < MAP_WIDTH)
+		{
+			if (all->map.charmap[i][j] == ' ')
+            	printf("\x1b[41m%c\x1b[m", all->map.charmap[i][j]);
+			else if (all->map.charmap[i][j] == 'x')
+            	printf("\x1b[34m%c\033[m", all->map.charmap[i][j]);
+			else if (all->map.charmap[i][j] == 'o')
+            	printf("\x1b[35m%c\033[m", all->map.charmap[i][j]);
+			else
+            	printf("%c", all->map.charmap[i][j]);
+			j++;
+		}
+        printf("\n");
+		i++;
+	}
+    printf("\n");
+} */
+
+//----------------put error --------------------
+
+void	ft_put_success_or_error(char *s, int fd)
+{
+	if (fd == 2)
+	{
+		write(1, "\e[31mError\e[m\n", 15);
+		ft_putstr_fd(s, fd);
+	}
+	else if (fd == 1)
+	{
+		write(1, "\e[32mSuccess\e[m\n", 17);
+		ft_putstr_fd(s, fd);
+	}
+}
+
+void	ft_put_error_and_exit(char *s, int fd)
+{
+	ft_put_success_or_error(s, fd);
+	exit(0);
+}
+
+//----------------put error --------------------
+
+//-------------------- utils -----------------------------------
+
+int		ft_isspace(char c)
+{
+	if (('\t' <= c && c <= '\r') || c == ' ')
+		return (1);
+	return (0);
+}
+
+int		ft_isonlyspace(char **line)
+{
+	int		i;
+
+	i = 0;
+	while ((*line)[i] != '\0')
+	{
+		if (!ft_isspace((*line)[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+void	ft_combine_color(t_all *all)
+{
+	all->color_f.rgb = all->color_f.r * 65536 + all->color_f.g * 256 + all->color_f.b;
+	all->color_c.rgb = all->color_c.r * 65536 + all->color_c.g * 256 + all->color_c.b;
+}
+
+//-------------------- utils -----------------------------------
+
+//----------------- libft ------------------------------
+
+static int	check_int_overflow(int sign, const char *str)
+{
+	int		digit;
+
+	digit = 0;
+	while (ft_isdigit(str[digit]))
+		digit++;
+	if (digit > 10)
+		return (-1);
+	if ((sign == 1 && ft_strncmp(str, "2147483647", 19) > 0)
+		&& digit == 10)
+		return (-1);
+	if ((sign == -1 && ft_strncmp(str, "2147483648", 19) > 0)
+		&& digit == 10)
+		return (-1);
+	return (1);
+}
+
+int		ft_atoi_ex(const char *str)
+{
+	long long		number;
+	int				sign;
+	int				i;
+
+	number = 0;
+	sign = 1;
+	i = 0;
+	while (('\t' <= str[i] && str[i] <= '\r') || str[i] == ' ')
+		i++;
+	if (str[i] == '-')
+		sign = -1;
+	if (str[i] == '+' || str[i] == '-')
+		i++;
+	if (check_int_overflow(sign, str + i) == -1)
+		return (check_int_overflow(sign, str + i));
+	while (ft_isdigit(str[i]))
+	{
+		number = number * 10;
+		number += str[i] - '0';
+		i++;
+	}
+	return (number * sign);
+}
+
+int		ft_strchr_ex(char *s, char c)
+{
+	int		i;
+
+	i = 0;
+	while (s[i] != '\0')
+	{
+		if (s[i] == c)
+			return (1);
+		i++;
+	}
+	if (s[i] == '\0' && c == '\0')
+		return (1);
+	return (0);
+}
+
+void		ft_lstclear_ex(t_sprlst **lst)
+{
+	t_sprlst	*tmp;
+
+	if (!lst || !*lst)
+		return ;
+	tmp = NULL;
+	while (*lst != NULL)
+	{
+		tmp = (*lst)->next;
+		free(*lst);
+		*lst = tmp;
+	}
+	*lst = NULL;
+}
 
 t_sprlst	*ft_newspr(double x, double y)
 {
@@ -68,81 +249,81 @@ int			ft_lstsize_ex(t_sprlst *lst)
 	return (i);
 }
 
-void	ft_put_success_or_error(char *s, int fd)
+//----------------- libft ------------------------------
+
+//------------- flood fill -----------------------------
+
+void	ft_convert_map_char_to_int(t_all *all)
 {
-	if (fd == 2)
-	{
-		write(1, "\e[31mError\e[m\n", 15);
-		ft_putstr_fd(s, fd);
-	}
-	else if (fd == 1)
-	{
-		write(1, "\e[32mSuccess\e[m\n", 17);
-		ft_putstr_fd(s, fd);
-	}
-}
+	int		i;
+	int		j;
 
-void	ft_put_error_and_exit(char *s, int fd)
-{
-	ft_put_success_or_error(s, fd);
-	exit(0);
-}
-
-static int	check_int_overflow(int sign, const char *str)
-{
-	int		digit;
-
-	digit = 0;
-	while (ft_isdigit(str[digit]))
-		digit++;
-	if (digit > 10)
-		return (-1);
-	if ((sign == 1 && ft_strncmp(str, "2147483647", 19) > 0)
-		&& digit == 10)
-		return (-1);
-	if ((sign == -1 && ft_strncmp(str, "2147483648", 19) > 0)
-		&& digit == 10)
-		return (-1);
-	return (1);
-}
-
-int		ft_atoi2(const char *str)
-{
-	long long		number;
-	int				sign;
-	int				i;
-
-	number = 0;
-	sign = 1;
 	i = 0;
-	while (('\t' <= str[i] && str[i] <= '\r') || str[i] == ' ')
-		i++;
-	if (str[i] == '-')
-		sign = -1;
-	if (str[i] == '+' || str[i] == '-')
-		i++;
-	if (check_int_overflow(sign, str + i) == -1)
-		return (check_int_overflow(sign, str + i));
-	while (ft_isdigit(str[i]))
+	while (i < MAP_HEIGHT)
 	{
-		number = number * 10;
-		number += str[i] - '0';
+		j = 0;
+		while (j < MAP_WIDTH)
+		{
+			if (all->map.charmap[i][j] == 'o')
+				all->map.map[i][j] = 0;
+			else if (all->map.charmap[i][j] == '@')
+				all->map.map[i][j] = 2;
+			else
+				all->map.map[i][j] = 1;
+			j++;
+		}
 		i++;
 	}
-	return (number * sign);
 }
+
+void	ft_flood_fill_recursion(t_all *all, int x, int y)
+{
+	if (x < 0 || y < 0)
+		return ;
+	if (x > MAP_WIDTH - 1 || y > MAP_HEIGHT - 1)
+		return ;
+	if (all->map.charmap[y][x] == ' ')
+	{
+		ft_put_error_and_exit("There is space in the walking range\n", 2);
+	}
+	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' && all->map.charmap[y][x] != '1' && all->map.charmap[y][x] != '2' && all->map.charmap[y][x] != 'o' && all->map.charmap[y][x] != '@')
+	{
+		ft_put_error_and_exit("Map is not closed\n", 2);
+	}
+	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' && all->map.charmap[y][x] != '2')
+		return ;
+	if (all->map.charmap[y][x] == '2')
+		all->map.charmap[y][x] = '@';
+	else
+		all->map.charmap[y][x] = 'o';
+	ft_flood_fill_recursion(all, x + 1, y);
+	ft_flood_fill_recursion(all, x - 1, y);
+	ft_flood_fill_recursion(all, x, y + 1);
+	ft_flood_fill_recursion(all, x, y - 1);
+}
+
+void	ft_flood_fill(t_all *all)
+{
+	ft_flood_fill_recursion(all, all->start_point.x, all->start_point.y);
+//	ft_putmap(all);
+	ft_convert_map_char_to_int(all);
+}
+
+//------------- flood fill -----------------------------
+
+//------------- cub utils ------------------------------
 
 void	ft_get_win(t_all *all, char **line)
 {
 	int		i;
 
 	i = 2;
-	all->win_r.x = ft_atoi2(*line + i);
+	all->win_r.x = ft_atoi_ex(*line + i);
 	while ((*line)[i] == ' ')
 		i++;
 	while (ft_isdigit((*line)[i]))
 		i++;
-	all->win_r.y = ft_atoi2(*line + i);
+	all->win_r.y = ft_atoi_ex(*line + i);
 	while ((*line)[i] == ' ')
 		i++;
 	while (ft_isdigit((*line)[i]))
@@ -155,6 +336,14 @@ void	ft_get_win(t_all *all, char **line)
 	}
 }
 
+void	ft_skip_digit(char **line, int *i, int *count)
+{
+	if (ft_isdigit((*line)[*i]))
+		(*count)++;
+	while (ft_isdigit((*line)[*i]))
+		(*i)++;
+}
+
 void	ft_get_floor(t_all *all, char **line)
 {
 	int		count;
@@ -162,27 +351,18 @@ void	ft_get_floor(t_all *all, char **line)
 
 	count = 0;
 	i = 2;
-	all->color_f.r = ft_atoi2(*line + i);
+	all->color_f.r = ft_atoi_ex(*line + i);
 	while ((*line)[i] == ' ')
 		i++;
-	if (ft_isdigit((*line)[i]))
-		count++;
-	while (ft_isdigit((*line)[i]))
-		i++;
+	ft_skip_digit(line, &i, &count);
 	if ((*line)[i] == ',')
 		i++;
-	all->color_f.g = ft_atoi2(*line + i);
-	if (ft_isdigit((*line)[i]))
-		count++;
-	while (ft_isdigit((*line)[i]))
-		i++;
+	all->color_f.g = ft_atoi_ex(*line + i);
+	ft_skip_digit(line, &i, &count);
 	if ((*line)[i] == ',')
 		i++;
-	all->color_f.b = ft_atoi2(*line + i);
-	if (ft_isdigit((*line)[i]))
-		count++;
-	while (ft_isdigit((*line)[i]))
-		i++;
+	all->color_f.b = ft_atoi_ex(*line + i);
+	ft_skip_digit(line, &i, &count);
 	while ((*line)[i] == ' ')
 		i++;
 	if (count != 3 || (*line)[i] || all->color_f.r < 0 || all->color_f.g < 0 || all->color_f.b < 0
@@ -199,27 +379,18 @@ void	ft_get_ceiling(t_all *all, char **line)
 
 	count = 0;
 	i = 2;
-	all->color_c.r = ft_atoi2(*line + i);
+	all->color_c.r = ft_atoi_ex(*line + i);
 	while ((*line)[i] == ' ')
 		i++;
-	if (ft_isdigit((*line)[i]))
-		count++;
-	while (ft_isdigit((*line)[i]))
-		i++;
+	ft_skip_digit(line, &i, &count);
 	if ((*line)[i] == ',')
 		i++;
-	all->color_c.g = ft_atoi2(*line + i);
-	if (ft_isdigit((*line)[i]))
-		count++;
-	while (ft_isdigit((*line)[i]))
-		i++;
+	all->color_c.g = ft_atoi_ex(*line + i);
+	ft_skip_digit(line, &i, &count);
 	if ((*line)[i] == ',')
 		i++;
-	all->color_c.b = ft_atoi2(*line + i);
-	if (ft_isdigit((*line)[i]))
-		count++;
-	while (ft_isdigit((*line)[i]))
-		i++;
+	all->color_c.b = ft_atoi_ex(*line + i);
+	ft_skip_digit(line, &i, &count);
 	while ((*line)[i] == ' ')
 		i++;
 	if (count != 3 || (*line)[i] || all->color_c.r < 0 || all->color_c.g < 0 || all->color_c.b < 0
@@ -245,23 +416,24 @@ char	*ft_get_path(t_all *all, char **line)
 	if (!(tmp = ft_split(*line, ' ')))
 	{
 		ft_put_error_and_exit("Invalid PATH\n", 2);
-		//free
 	}
-	if (!(path = ft_strdup(tmp[1])) && path[0] != '.' && path[1] != '/')
+	if (!(path = ft_strdup(tmp[1])) || !(path[0] == '.' && path[1] == '/'))
 	{
 		ft_put_error_and_exit("Invalid PATH\n", 2);
-		//free
 	}
 	if (tmp[2] != NULL)
 	{
 		ft_put_error_and_exit("Invalid PATH\n", 2);
-		//free
 	}
 	free(tmp[0]);
 	free(tmp[1]);
 	free(tmp);
 	return (path);
 }
+
+//------------- cub utils ------------------------------
+
+//-------------------- R -----------------------------------
 
 void	ft_parse_line_r(t_all *all, char **line)
 {
@@ -341,12 +513,6 @@ void	ft_parse_line_s(t_all *all, char **line)
 	}
 }
 
-void	ft_combine_color(t_all *all)
-{
-	all->color_f.rgb = all->color_f.r * 65536 + all->color_f.g * 256 + all->color_f.b;
-	all->color_c.rgb = all->color_c.r * 65536 + all->color_c.g * 256 + all->color_c.b;
-}
-
 void	ft_parse_line_f(t_all *all, char **line)
 {
 	if (all->cubflag.f == 0)
@@ -373,6 +539,21 @@ void	ft_parse_line_c(t_all *all, char **line)
 	}
 }
 
+//-------------------- C -----------------------------------
+
+//-------------------- parse map -----------------------------------
+
+void	ft_set_start_point(t_all *all, char **line, int *i, int *j)
+{
+	if (all->start_point.flag == 1)
+		ft_put_error_and_exit("There are multiple start points\n", 2);
+	all->start_point.dir = (*line)[*j];
+	all->start_point.flag = 1;
+	all->start_point.y = *i + 1.5;
+	all->start_point.x = *j + 1.5;
+	all->map.charmap[*i + 1][*j + 1] = 'n';
+}
+
 void	ft_parse_map(t_all *all, char **line)
 {
 	static int		i = 0;
@@ -389,17 +570,7 @@ void	ft_parse_map(t_all *all, char **line)
 	while ((*line)[j] != '\0')
 	{
 		if ((*line)[j] == 'N' || (*line)[j] == 'S' || (*line)[j] == 'W' || (*line)[j] == 'E')
-		{
-			if (all->start_point.flag == 1)
-			{
-				ft_put_error_and_exit("There are multiple start points\n", 2);
-			}
-			all->start_point.dir = (*line)[j];
-			all->start_point.flag = 1;
-			all->start_point.y = i + 1.5;
-			all->start_point.x = j + 1.5;
-			all->map.charmap[i + 1][j + 1] = 'n';
-		}
+			ft_set_start_point(all, line, &i, &j);
 		else if ((*line)[j] == '2')
 		{
 			ft_lstadd_back_ex(&(all->sprlst), ft_newspr(j + 1.5, i + 1.5));
@@ -412,49 +583,6 @@ void	ft_parse_map(t_all *all, char **line)
 		j++;
 	}
 	i++;
-}
-
-void	ft_putmap(t_all *all)
-{
-	int			i;
-	int			j;
-
-	i = 0;
-	while (i < MAP_HEIGHT)
-	{
-		j = 0;
-		while (j < MAP_WIDTH)
-		{
-			if (all->map.charmap[i][j] == ' ')
-            	printf("\x1b[41m%c\x1b[m", all->map.charmap[i][j]);
-			else if (all->map.charmap[i][j] == 'x')
-            	printf("\x1b[34m%c\033[m", all->map.charmap[i][j]);
-			else if (all->map.charmap[i][j] == 'o')
-            	printf("\x1b[35m%c\033[m", all->map.charmap[i][j]);
-			else
-            	printf("%c", all->map.charmap[i][j]);
-			j++;
-		}
-        printf("\n");
-		i++;
-	}
-    printf("\n");
-}
-
-int		ft_strchr_ex(char *s, char c)
-{
-	int		i;
-
-	i = 0;
-	while (s[i] != '\0')
-	{
-		if (s[i] == c)
-			return (1);
-		i++;
-	}
-	if (s[i] == '\0' && c == '\0')
-		return (1);
-	return (0);
 }
 
 int		ft_ismap(t_all *all, char *line)
@@ -484,12 +612,9 @@ int		ft_ismap(t_all *all, char *line)
 	return (0);
 }
 
-int		ft_isspace(char c)
-{
-	if (('\t' <= c && c <= '\r') || c == ' ')
-		return (1);
-	return (0);
-}
+//-------------------- parse map -----------------------------------
+
+//-------------------- read cub -----------------------------------
 
 int		ft_check_after_map(t_all *all, char *line)
 {
@@ -507,18 +632,16 @@ int		ft_check_after_map(t_all *all, char *line)
 	return (1);
 }
 
-int		ft_isonlyspace(char **line)
+void	ft_check_element_and_parse_map(t_all *all, char **line)
 {
-	int		i;
-
-	i = 0;
-	while ((*line)[i] != '\0')
-	{
-		if (!ft_isspace((*line)[i]))
-			return (0);
-		i++;
-	}
-	return (1);
+	all->map.start = 1;
+	if (all->map.end == 1)
+		ft_put_error_and_exit("Invalid map\n", 2);
+	if (!all->cubflag.r || !all->cubflag.no || !all->cubflag.so
+		|| !all->cubflag.we || !all->cubflag.ea
+		|| !all->cubflag.s || !all->cubflag.f || !all->cubflag.c)
+		ft_put_error_and_exit("All elements are needed (R,NO,SO,WE,EA,S,F,C)\n", 2);
+	ft_parse_map(all, line);
 }
 
 void	ft_parse_line(t_all *all, char **line)
@@ -540,30 +663,13 @@ void	ft_parse_line(t_all *all, char **line)
 	else if ((*line)[0] == 'C' && (*line)[1] == ' ')
 		ft_parse_line_c(all, line);
 	else if (ft_ismap(all, *line))
-	{
-		all->map.start = 1;
-		if (all->map.end == 1)
-		{
-			ft_put_error_and_exit("Invalid map\n", 2);
-		}
-		if (!all->cubflag.r || !all->cubflag.no || !all->cubflag.so
-			|| !all->cubflag.we || !all->cubflag.ea
-			|| !all->cubflag.s || !all->cubflag.f || !all->cubflag.c)
-		{
-			ft_put_error_and_exit("All elements are needed (R,NO,SO,WE,EA,S,F,C)\n", 2);
-		}
-		ft_parse_map(all, line);
-	}
+		ft_check_element_and_parse_map(all, line);
 	else if (all->map.start == 1 && all->map.end == 0)
 		all->map.end = 1;
 	else if (all->map.start == 1 && all->map.end == 1 && ft_check_after_map(all, *line) == -1)
-	{
 		ft_put_error_and_exit("Map is not at the end\n", 2);
-	}
 	else if (!ft_isonlyspace(line))
-	{
 		ft_put_error_and_exit("Neither element nor map\n", 2);
-	}
 }
 
 void	ft_read_cub(t_all *all, int fd)
@@ -582,18 +688,26 @@ void	ft_read_cub(t_all *all, int fd)
 	}
 	ft_parse_line(all, &line);
 	free(line);
-	ft_putmap(all);
+	ft_combine_color(all);
+//	ft_putmap(all);
 }
 
-void	ft_init_all(t_all *all)
+//-------------------- read cub -----------------------------------
+
+//-------------------- init -----------------------------------
+
+void	ft_init_sprite(t_all *all)
 {
-	int		i;
-	int		j;
+	all->spr.number = ft_lstsize_ex(all->sprlst);
+	all->spr.sprite_x = (double *)malloc(sizeof(double) * all->spr.number);
+	all->spr.sprite_y = (double *)malloc(sizeof(double) * all->spr.number);
+}
 
-	// --save
+void	ft_init_all(t_all *all, int argc)
+{
 	all->save = 0;
-
-	// cubflag
+	if (argc == 3)
+		all->save = 1;
 	all->cubflag.r = 0;
 	all->cubflag.no = 0;
 	all->cubflag.so = 0;
@@ -602,39 +716,19 @@ void	ft_init_all(t_all *all)
 	all->cubflag.s = 0;
 	all->cubflag.f = 0;
 	all->cubflag.c = 0;
-
-	// map
 	all->map.start = 0;
 	all->map.end = 0;
-
-	// sprlst
 	all->sprlst = NULL;
-
-	// window
 	all->win_r.x = 0;
 	all->win_r.y = 0;
-
-	// path_texture
-	all->path_tex.north = NULL;
-	all->path_tex.south = NULL;
-	all->path_tex.west = NULL;
-	all->path_tex.east = NULL;
-	all->path_tex.sprite = NULL;
-
-	// start_point
 	all->start_point.flag = 0;
-
-	// speed
 	all->player.player_speed = 0.05;
 	all->player.player_rotspeed = 0.05;
-
-	// key
 	all->info.key_a = 0;
 	all->info.key_w = 0;
 	all->info.key_s = 0;
 	all->info.key_d = 0;
 	all->info.key_esc = 0;
-
 }
 
 void	ft_init_map(t_all *all)
@@ -658,38 +752,13 @@ void	ft_init_map(t_all *all)
 	}
 }
 
-void	ft_flood_fill_recursion(t_all *all, int x, int y)
+void	ft_init(t_all *all, int argc)
 {
-	if (x < 0 || y < 0)
-		return ;
-	if (x > MAP_WIDTH - 1 || y > MAP_HEIGHT - 1)
-		return ;
-	if (all->map.charmap[y][x] == ' ')
-	{
-		ft_put_error_and_exit("There is space in the walking range\n", 2);
-	}
-	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' && all->map.charmap[y][x] != '1' && all->map.charmap[y][x] != '2' && all->map.charmap[y][x] != 'o' && all->map.charmap[y][x] != '@')
-	{
-		ft_put_error_and_exit("Map is not closed\n", 2);
-	}
-
-	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' && all->map.charmap[y][x] != '2')
-		return ;
-	if (all->map.charmap[y][x] == '2')
-		all->map.charmap[y][x] = '@';
-	else
-		all->map.charmap[y][x] = 'o';
-	ft_flood_fill_recursion(all, x + 1, y);
-	ft_flood_fill_recursion(all, x - 1, y);
-	ft_flood_fill_recursion(all, x, y + 1);
-	ft_flood_fill_recursion(all, x, y - 1);
+	ft_init_all(all, argc);
+	ft_init_map(all);
 }
 
-void	ft_flood_fill(t_all *all)
-{
-	ft_flood_fill_recursion(all, all->start_point.x, all->start_point.y);
-	ft_putmap(all);
-}
+//-------------------- init -----------------------------------
 
 int		ft_iscub(char *cub)
 {
@@ -701,50 +770,6 @@ int		ft_iscub(char *cub)
 	return (0);	
 }
 
-void	ft_convert_map_char_to_int(t_all *all)
-{
-	int		i;
-	int		j;
-
-	i = 0;
-	while (i < MAP_HEIGHT)
-	{
-		j = 0;
-		while (j < MAP_WIDTH)
-		{
-			if (all->map.charmap[i][j] == 'o')
-				all->map.map[i][j] = 0;
-			else if (all->map.charmap[i][j] == '@')
-				all->map.map[i][j] = 2;
-			else
-				all->map.map[i][j] = 1;
-			j++;
-		}
-		i++;
-	}
-}
-
-void	ft_print_map(t_all *all)
-{
-	int		i, j;
-
-	i = 0;
-	while (i < MAP_HEIGHT)
-	{
-		j = 0;
-		while (j < MAP_WIDTH)
-		{
-			if (all->map.map[i][j] == 0)
-				printf("\x1b[41m%d\x1b[m", all->map.map[i][j]);
-			else
-				printf("%d", all->map.map[i][j]);
-			j++;
-		}
-		printf("\n");
-		i++;
-	}
-}
-
 int main(int argc, char **argv)
 {
 	t_all		all;
@@ -752,28 +777,19 @@ int main(int argc, char **argv)
 
 	if (((argc == 2 && ft_iscub(argv[1]))) || (argc == 3 && !ft_strncmp(argv[2], "--save", 7)))
 	{
-		if (argc == 3)
-			all.save = 1;
-		ft_init_all(&all);
-		ft_init_map(&all);
+		ft_init(&all, argc);
 		if ((fd = open(argv[1], O_RDONLY)) == -1)
-		{
 			ft_put_error_and_exit("Failed to open file\n", 2);
-		}
 		ft_read_cub(&all, fd);
 		if (all.start_point.flag != 1)
-		{
 			ft_put_error_and_exit("There is not a start point\n", 2);
-		}
 		ft_flood_fill(&all);
-		ft_combine_color(&all);
-		ft_convert_map_char_to_int(&all);
-		ft_print_map(&all);
-		all.spr.number = ft_lstsize_ex(all.sprlst);
+//		ft_print_map(&all);
+		ft_init_sprite(&all);
 		close(fd);
-
+		ft_init_mlx_and_win(&all);
 		if (argc == 2)
-			ft_raycasting(&all);
+			ft_continue_screen(&all);
 		else if (argc == 3)
 			ft_write_bmp(&all);
 	}

@@ -11,11 +11,9 @@
 # include <stdlib.h>//exit
 # include <string.h>
 # include <math.h>
-# define X_EVENT_KEY_PRESS	2
-# define X_EVENT_KEY_RELEASE	3
-# define X_EVENT_KEY_EXIT	17
-# define TEX_WIDTH 64
-# define TEX_HEIGHT 64
+# define KEY_PRESS 2
+# define KEY_RELEASE 3
+# define DESTROY_NOTIFY 17
 # define MAP_WIDTH 50
 # define MAP_HEIGHT 50
 # define uDiv 1
@@ -192,6 +190,8 @@ typedef struct		s_spr
     int             d;
     int             color3;
 	double			*zBuffer;
+	double			*sprite_x;
+	double			*sprite_y;
 }					t_spr;
 
 typedef struct		s_all
@@ -221,9 +221,12 @@ typedef struct		s_all
 }					t_win_buf; */
 
 void	key_update(t_all *all);
-void	ft_raycasting(t_all *all);
+void	ft_continue_screen(t_all *all);
 void	ft_put_error_and_exit(char *s, int fd);
 void	ft_write_bmp(t_all *all);
 void	ft_put_success_or_error(char *s, int fd);
+void		ft_lstclear_ex(t_sprlst **lst);
+void	ft_init_mlx_and_win(t_all *all);
+
 
 #endif
