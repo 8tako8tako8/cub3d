@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/20 01:55:40 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/21 02:42:18 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,16 @@ double	ft_absolute_value(double value)
 	return (value);
 }
 
-static void		ft_free1(int **dst, int i)
+void		ft_free(int **dst, int i)
 {
 	while (i > 0)
 	{
 		i--;
-		free(dst[i]);
+		if (dst[i])
+			free(dst[i]);
 	}
-	free(dst);
+	if (dst)
+		free(dst);
 }
 
 int		ft_min(int x, int y)
@@ -140,20 +142,7 @@ t_sprlst  *ft_lst_merge_sort(t_sprlst *list, double posX, double posY)
 int		ft_press_key(int key, t_all *all)
 {
 	if (key == K_ESC)
-	{
-		ft_lstclear_ex(&(all->sprlst));
-		ft_free1(all->win_r.buf, all->win_r.y);
-		ft_free1(all->info.texture, 5);
-		free(all->spr.zBuffer);
-		free(all->path_tex.north);
-		free(all->path_tex.south);
-		free(all->path_tex.west);
-		free(all->path_tex.east);
-		free(all->path_tex.sprite);
-//		mlx_destroy_image(all->info.mlx, all->img.img);
-//		system("leaks a.out");
-		exit(0);
-	}
+		ft_exit(all);
 	else if (key == K_W)
 		all->info.key_w = 1;
 	else if (key == K_A)
@@ -162,16 +151,16 @@ int		ft_press_key(int key, t_all *all)
 		all->info.key_s = 1;
 	else if (key == K_D)
 		all->info.key_d = 1;
+	else if (key == K_LEFT)
+		all->info.key_left = 1;
+	else if (key == K_RIGHT)
+		all->info.key_right = 1;
 	return (0);
 }
 
 int		 ft_release_key(int key, t_all *all)
 {
-	if (key == K_ESC)
-	{
-		exit(0);
-	}
-	else if (key == K_W)
+	if (key == K_W)
 		all->info.key_w = 0;
 	else if (key == K_A)
 		all->info.key_a = 0;
@@ -179,24 +168,11 @@ int		 ft_release_key(int key, t_all *all)
 		all->info.key_s = 0;
 	else if (key == K_D)
 		all->info.key_d = 0;
+	else if (key == K_LEFT)
+		all->info.key_left = 0;
+	else if (key == K_RIGHT)
+		all->info.key_right = 0;
 	return (0);
-}
-
-int		ft_destroy_win(t_all *all)
-{
-/* 	ft_lstclear_ex(&(all->sprlst));
-	ft_free1(all->win_r.buf, all->win_r.y);
-	ft_free1(all->info.texture, 5);
-	free(all->spr.zBuffer); */
-	printf("*****%p*****\n", all);
-
-/* 	free(all->path_tex.north);
-	free(all->path_tex.south);
-	free(all->path_tex.west);
-	free(all->path_tex.east);
-	free(all->path_tex.sprite); */
-//	system("leaks a.out");
-	exit(0);
 }
 
 //------------------- event key ----------------------------------
@@ -320,14 +296,10 @@ void	ft_set_elements_for_sprite_drawing(t_all *all, int *i)
 	// カメラ平面に対するスプライトの位置
 	all->spr.spriteX = all->spr.sprite_x[*i] - all->player.posX;
 	all->spr.spriteY = all->spr.sprite_y[*i] - all->player.posY;
-
-	all->spr.invDet = 1.0 / (all->player.planeX * all->player.dirY - all->player.dirX * all->player.planeY); //required for correct matrix multiplication
-
+	all->spr.invDet = 1.0 / (all->player.planeX * all->player.dirY - all->player.dirX * all->player.planeY);
 	all->spr.transformX = all->spr.invDet * (all->player.dirY * all->spr.spriteX - all->player.dirX * all->spr.spriteY);
-	all->spr.transformY = all->spr.invDet * (-all->player.planeY * all->spr.spriteX + all->player.planeX * all->spr.spriteY); //this is actually the depth inside the screen, that what Z is in 3D, the distance of sprite to player, matching sqrt(spriteDistance[i])
-
+	all->spr.transformY = all->spr.invDet * (-all->player.planeY * all->spr.spriteX + all->player.planeX * all->spr.spriteY);
 	all->spr.spriteScreenX = (int)((all->win_r.x / 2) * (1 + all->spr.transformX / all->spr.transformY));
-
 	all->spr.vMoveScreen = (int)(vMove / all->spr.transformY);
 }
 
@@ -378,18 +350,12 @@ void	ft_calc_wall_tex(t_all *all, int *x)
 		all->tex.texX1 = all->img.tex_width[all->tex.texnum] - all->tex.texX1 - 1;
 	if(all->ray.side == 1 && all->ray.raydirY < 0)
 		all->tex.texX1 = all->img.tex_width[all->tex.texnum] - all->tex.texX1 - 1;
-	// TODO: an integer-only bresenham or DDA like algorithm could make the texture coordinate stepping faster
-	// How much to increase the texture coordinate per screen pixel
 	all->tex.step = 1.0 * all->img.tex_height[all->tex.texnum] / all->ray.lineheight;
-	// Starting texture coordinate
 	all->tex.texpos = (all->ray.drawstart - all->win_r.y / 2 + all->ray.lineheight / 2) * all->tex.step;
 	y = all->ray.drawstart;
 	while (y < all->ray.drawend)
 	{
-		// Cast the texture coordinate to integer, and mask with (TEX_HEIGHT - 1) in case of overflow
-		//all->tex.texY1 = (int)all->tex.texpos & (all->img.tex_height[all->tex.texnum] - 1);
 		all->tex.texY1 = ft_min((int)all->tex.texpos, (all->img.tex_height[all->tex.texnum] - 1));
-		//all->tex.texY1 = (int)all->tex.texpos;
 		all->tex.texpos += all->tex.step;
 		all->tex.color2 = all->info.texture[all->tex.texnum][(all->img.tex_height[all->tex.texnum]) * (all->tex.texY1) + all->tex.texX1];
 		all->win_r.buf[y][*x] = all->tex.color2;
@@ -400,7 +366,7 @@ void	ft_calc_wall_tex(t_all *all, int *x)
 void	ft_set_tex_for_each_direction(t_all *all)
 {
 	if (all->ray.side == 0 && all->ray.raydirX < 0)
-		all->tex.texnum = 0; //1 subtracted from it so that texture 0 can be used!
+		all->tex.texnum = 0;
 	else if (all->ray.side == 0 && all->ray.raydirX >= 0)
 		all->tex.texnum = 3;
 	else if (all->ray.side == 1 && all->ray.raydirY < 0)
@@ -412,7 +378,6 @@ void	ft_set_tex_for_each_direction(t_all *all)
 void	ft_calc_wall_drawing(t_all *all)
 {
 	all->ray.lineheight = (int)(all->win_r.y / all->ray.perpwalldist);//描画する壁の高さ
-	//calculate lowest and highest pixel to fill in current stripe
 	all->ray.drawstart = -all->ray.lineheight / 2 + all->win_r.y / 2;
 	if(all->ray.drawstart < 0)
 		all->ray.drawstart = 0;//画面外は0
@@ -431,7 +396,6 @@ void	ft_find_collision_with_wall(t_all *all)
 {
 	while (all->ray.hit == 0)
 	{
-		//jump to next map square, OR in x-direction, OR in y-direction
 		if(all->ray.sidedistX < all->ray.sidedistY)
 		{
 			all->ray.sidedistX += all->ray.deltadistX;
@@ -479,14 +443,11 @@ void	ft_set_step_and_sidedist(t_all *all)
 
 void	ft_set_camera_and_raydir_and_deltadist(t_all *all, int x)
 {
-	//calculate ray position and direction
 	all->ray.cameraX = 2 * x / (double)all->win_r.x - 1;//現在のx座標が表すカメラ平面上のx座標
 	all->ray.raydirX = all->player.dirX + all->player.planeX * all->ray.cameraX;//光線の方向ベクトル
 	all->ray.raydirY = all->player.dirY + all->player.planeY * all->ray.cameraX;//光線の方向ベクトル
-	//which box of the map we're in
 	all->ray.mapX = (int)all->player.posX;//mapのどこにいるか
 	all->ray.mapY = (int)all->player.posY;//mapのどこにいるか
-
 	all->ray.deltadistX = ft_absolute_value(1 / all->ray.raydirX);
 	all->ray.deltadistY = ft_absolute_value(1 / all->ray.raydirY);
 }
@@ -511,8 +472,7 @@ void	ft_wall_casting(t_all *all)
 		wallXと呼ばれていても、side==1の場合、実際には壁のy座標ですが、
 		常にテクスチャのx座標であることに注意する。 */
 		ft_calc_wall_tex(all, &x);
-		//SET THE ZBUFFER FOR THE SPRITE CASTING
-		all->spr.zBuffer[x] = all->ray.perpwalldist; //perpendicular distance is used
+		all->spr.zBuffer[x] = all->ray.perpwalldist;
 		x++;
 	}
 }
@@ -541,26 +501,52 @@ void	ft_turn_right(t_all *all)
 	all->player.planeY = all->ray.oldplaneX * sin(all->player.player_rotspeed) + all->player.planeY * cos(all->player.player_rotspeed);
 }
 
+void	ft_move_forward(t_all *all)
+{
+	if (!all->map.map[(int)(all->player.posY)][(int)(all->player.posX + all->player.dirX * all->player.player_speed)])
+		all->player.posX += all->player.dirX * all->player.player_speed;
+	if (!all->map.map[(int)(all->player.posY + all->player.dirY * all->player.player_speed)][(int)(all->player.posX)])
+		all->player.posY += all->player.dirY * all->player.player_speed;
+}
+
+void	ft_move_backward(t_all *all)
+{
+	if (!all->map.map[(int)(all->player.posY)][(int)(all->player.posX - all->player.dirX * all->player.player_speed)])
+		all->player.posX -= all->player.dirX * all->player.player_speed;
+	if (!all->map.map[(int)(all->player.posY - all->player.dirY * all->player.player_speed)][(int)(all->player.posX)])
+		all->player.posY -= all->player.dirY * all->player.player_speed;
+}
+
+void	ft_move_left(t_all *all)
+{
+	if (!all->map.map[(int)(all->player.posY)][(int)(all->player.posX - all->player.planeX * all->player.player_speed)])
+		all->player.posX -= all->player.planeX * all->player.player_speed;
+	if (!all->map.map[(int)(all->player.posY - all->player.planeY * all->player.player_speed)][(int)(all->player.posX)])
+		all->player.posY -= all->player.planeY * all->player.player_speed;	
+}
+
+void	ft_move_right(t_all *all)
+{
+	if (!all->map.map[(int)(all->player.posY)][(int)(all->player.posX + all->player.planeX * all->player.player_speed)])
+		all->player.posX += all->player.planeX * all->player.player_speed;
+	if (!all->map.map[(int)(all->player.posY + all->player.planeY * all->player.player_speed)][(int)(all->player.posX)])
+		all->player.posY += all->player.planeY * all->player.player_speed;	
+}
+
 void	ft_move_player(t_all *all)
 {
 	if (all->info.key_w)
-	{
-		if (!all->map.map[(int)(all->player.posY)][(int)(all->player.posX + all->player.dirX * all->player.player_speed)])
-			all->player.posX += all->player.dirX * all->player.player_speed;
-		if (!all->map.map[(int)(all->player.posY + all->player.dirY * all->player.player_speed)][(int)(all->player.posX)])
-			all->player.posY += all->player.dirY * all->player.player_speed;
-	}
+		ft_move_forward(all);
 	if (all->info.key_s)
-	{
-		if (!all->map.map[(int)(all->player.posY)][(int)(all->player.posX - all->player.dirX * all->player.player_speed)])
-			all->player.posX -= all->player.dirX * all->player.player_speed;
-		if (!all->map.map[(int)(all->player.posY - all->player.dirY * all->player.player_speed)][(int)(all->player.posX)])
-			all->player.posY -= all->player.dirY * all->player.player_speed;
-	}
+		ft_move_backward(all);
 	if (all->info.key_a)
 		ft_turn_left(all);
 	if (all->info.key_d)
 		ft_turn_right(all);
+	if (all->info.key_right)
+		ft_move_right(all);
+	if (all->info.key_left)
+		ft_move_left(all);
 }
 
 //----------------- move -------------------------
@@ -628,7 +614,6 @@ void	ft_draw_window_save(t_all *all)
 		}
 		y++;
 	}
-	mlx_put_image_to_window(all->info.mlx, all->info.win, all->img.img, 0, 0);
 }
 
 void	ft_write_bmp_header(t_all *all, int fd, int filesize)
@@ -668,7 +653,6 @@ void	ft_save_bmp(t_all *all)
 	ft_write_bmp_header(all, fd, filesize);
 	write(fd, (char *)all->img.data, 4 * all->win_r.x * all->win_r.y);
 	close(fd);
-	exit(0);
 }
 
 void	ft_write_bmp(t_all *all)
@@ -678,6 +662,7 @@ void	ft_write_bmp(t_all *all)
 	ft_sprite_casting(all);
 	ft_draw_window_save(all);
 	ft_save_bmp(all);
+	ft_exit(all);
 }
 
 //------------------- bmp ----------------------------------
@@ -703,7 +688,7 @@ void	ft_draw_window(t_all *all)
 	mlx_put_image_to_window(all->info.mlx, all->info.win, all->img.img, 0, 0);
 }
 
-int	main_loop(t_all *all)
+int	ft_raycasting(t_all *all)
 {
 	ft_floor_casting(all);
 	ft_wall_casting(all);
@@ -716,11 +701,10 @@ int	main_loop(t_all *all)
 void	ft_continue_screen(t_all *all)
 {
 	ft_put_success_or_error("Start drawing\n", 1);//Success
-
-	mlx_loop_hook(all->info.mlx, &main_loop, all);
-	mlx_hook(all->info.win, KEY_PRESS, 1L<<0, &ft_press_key, all);
-	mlx_hook(all->info.win, KEY_RELEASE, 1L<<1, &ft_release_key, all);
-	mlx_hook(all->info.win, DESTROY_NOTIFY, 1L<<17, &ft_destroy_win, all);
+	mlx_loop_hook(all->info.mlx, &ft_raycasting, all);
+	mlx_hook(all->info.win, 2, 1L<<0, &ft_press_key, all);
+	mlx_hook(all->info.win, 3, 1L<<1, &ft_release_key, all);
+	mlx_hook(all->info.win, 17, 1L<<17, &ft_exit, all);
 	mlx_loop(all->info.mlx);
 }
 
@@ -789,18 +773,9 @@ void	ft_init_mlx_and_win(t_all *all)
 	ft_set_pos_and_dir_and_plane(all);
 	ft_init_buf_and_tex(all);
 	ft_load_texture(all);
-	DI(all->img.tex_width[0]);
-	DI(all->img.tex_width[1]);
-	DI(all->img.tex_width[2]);
-	DI(all->img.tex_width[3]);
-	DI(all->img.tex_width[4]);
-	DI(all->img.tex_height[0]);
-	DI(all->img.tex_height[1]);
-	DI(all->img.tex_height[2]);
-	DI(all->img.tex_height[3]);
-	DI(all->img.tex_height[4]);
-	if (!(all->info.win = mlx_new_window(all->info.mlx, all->win_r.x, all->win_r.y, "cub3d")))
-		ft_put_error_and_exit("mlx_new_window failed\n", 2);
+	if (all->save == 0)
+		if (!(all->info.win = mlx_new_window(all->info.mlx, all->win_r.x, all->win_r.y, "cub3d")))
+			ft_put_error_and_exit("mlx_new_window failed\n", 2);
 	if (!(all->img.img = mlx_new_image(all->info.mlx, all->win_r.x, all->win_r.y)))
 		ft_put_error_and_exit("mlx_new_image failed\n", 2);
 	if (!(all->img.data = (int *)mlx_get_data_addr(all->img.img, &all->img.bpp, &all->img.size_l, &all->img.endian)))
@@ -808,3 +783,39 @@ void	ft_init_mlx_and_win(t_all *all)
 }
 
 //----------------- init mlx -------------------------
+
+void	ft_free_path(t_all *all)
+{
+	if (all->path_tex.north)
+		free(all->path_tex.north);
+	if (all->path_tex.south)
+		free(all->path_tex.south);
+	if (all->path_tex.west)
+		free(all->path_tex.west);
+	if (all->path_tex.east)
+		free(all->path_tex.east);
+	if (all->path_tex.sprite)
+		free(all->path_tex.sprite);
+}
+
+int	ft_exit(t_all *all)
+{
+	if (all->img.img)
+		mlx_destroy_image(all->info.mlx, all->img.img);
+	if (all->info.mlx)
+	{
+		mlx_destroy_display(all->info.mlx);
+		free(all->info.mlx);
+	}
+	ft_lstclear_ex(&(all->sprlst));
+	ft_free(all->win_r.buf, all->win_r.y);
+	ft_free(all->info.texture, 5);
+	if (all->spr.sprite_x)
+		free(all->spr.sprite_x);
+	if (all->spr.sprite_y)
+		free(all->spr.sprite_y);
+	if (all->spr.zBuffer)
+		free(all->spr.zBuffer);
+	ft_free_path(all);
+	exit(0);
+}

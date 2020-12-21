@@ -1,0 +1,18 @@
+R    480 480
+NO     ./textures/summer.xpm
+SO       ./textures/winter.xpm
+WE   ./textures/spring.xpm
+EA  ./textures/autumn.xpm
+
+S   ./textures/oldcry2.xpm
+F    100,200,100
+C   150,255,255
+
+1111111111111111111111111111111111
+1000000011
+100000000111
+10020000111
+10000201
+1200N001
+10000201
+1111111111111111111111111111111111

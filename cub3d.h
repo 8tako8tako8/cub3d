@@ -1,8 +1,9 @@
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include "minilibx_mms_20200219/mlx.h"
-# include "key_macos.h"
+# include "minilibx-linux/mlx.h"
+// # include "key_macos.h"
+# include "key_linux.h"
 # include "get_next_line.h"
 # include "libft/libft.h"
 # include "debug.h"
@@ -116,6 +117,8 @@ typedef struct		s_info
 	int				key_w;
 	int				key_s;
 	int				key_d;
+	int				key_left;
+	int				key_right;
 	int				key_esc;
 	int				**texture;
 
@@ -227,6 +230,7 @@ void	ft_write_bmp(t_all *all);
 void	ft_put_success_or_error(char *s, int fd);
 void		ft_lstclear_ex(t_sprlst **lst);
 void	ft_init_mlx_and_win(t_all *all);
+int	ft_exit(t_all *all);
 
 
 #endif

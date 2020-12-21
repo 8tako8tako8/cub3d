@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/06/29 20:28:54 by yohlee            #+#    #+#             */
-/*   Updated: 2020/12/17 15:48:51 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/21 01:34:36 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -713,8 +713,8 @@ void	ft_save_bmp(t_all *all)
 
 void	ft_write_bmp(t_all *all)
 {
-	if (!(all->info.mlx = mlx_init()))
-		ft_put_error_and_exit("mlx_init failed\n", 2);
+//	if (!(all->info.mlx = mlx_init()))
+//		ft_put_error_and_exit("mlx_init failed\n", 2);
 	mlx_get_screen_size(all->info.mlx, &all->win_r.screen_x, &all->win_r.screen_y);
 	ft_resize_win_size(all);
 	ft_init_buf_and_zbuffer(all);

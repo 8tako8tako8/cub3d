@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/19 17:50:57 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/20 01:30:40 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/21 14:32:47 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -187,7 +187,8 @@ void		ft_lstclear_ex(t_sprlst **lst)
 	while (*lst != NULL)
 	{
 		tmp = (*lst)->next;
-		free(*lst);
+		if (*lst)
+			free(*lst);
 		*lst = tmp;
 	}
 	*lst = NULL;
@@ -722,8 +723,8 @@ void	ft_init_all(t_all *all, int argc)
 	all->win_r.x = 0;
 	all->win_r.y = 0;
 	all->start_point.flag = 0;
-	all->player.player_speed = 0.05;
-	all->player.player_rotspeed = 0.05;
+	all->player.player_speed = 0.03;
+	all->player.player_rotspeed = 0.03;
 	all->info.key_a = 0;
 	all->info.key_w = 0;
 	all->info.key_s = 0;

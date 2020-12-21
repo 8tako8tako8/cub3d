@@ -12,7 +12,7 @@
 
 NAME := cub3D
 CC := gcc
-CFLAGS := -Wall -Wextra -Werror
+CFLAGS :=
 FLAGS := -lXext -lX11
 MLX_DIR := ./minilibx-linux
 LIBFT_DIR := ./libft

@@ -1,0 +1,20 @@
+R 1920 1080
+
+NO ./textures/spring.png
+SO ./textures/greystone.xpm
+WE ./textures/redbrick.xpm
+EA ./textures/purplestone.xpm
+
+S ./textures/barrel.xpm
+F 220,100,0
+C 12,30,0
+
+111111111111
+100000000001
+100000000001
+100000000001
+10000N000001
+100000000001
+100000000001
+100000000001
+111111111111
