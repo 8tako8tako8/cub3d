@@ -14,8 +14,8 @@
 
 void	ft_draw_window(t_all *all)
 {
-	int		x;
-	int		y;
+	int	x;
+	int	y;
 
 	y = 0;
 	while (y < all->win_r.y)
@@ -31,7 +31,7 @@ void	ft_draw_window(t_all *all)
 	mlx_put_image_to_window(all->mlx.mlx, all->mlx.win, all->img.img, 0, 0);
 }
 
-int	ft_raycasting(t_all *all)
+int		ft_raycasting(t_all *all)
 {
 	ft_floor_casting(all);
 	ft_wall_casting(all);

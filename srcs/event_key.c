@@ -31,7 +31,7 @@ int		ft_press_key(int key, t_all *all)
 	return (0);
 }
 
-int		 ft_release_key(int key, t_all *all)
+int		ft_release_key(int key, t_all *all)
 {
 	if (key == K_W)
 		all->key.key_w = 0;

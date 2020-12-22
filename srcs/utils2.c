@@ -42,6 +42,8 @@ int		ft_isonlyspace(char **line)
 
 void	ft_combine_color(t_all *all)
 {
-	all->color_f.rgb = all->color_f.r * 65536 + all->color_f.g * 256 + all->color_f.b;
-	all->color_c.rgb = all->color_c.r * 65536 + all->color_c.g * 256 + all->color_c.b;
+	all->color_f.rgb = all->color_f.r * 65536
+		+ all->color_f.g * 256 + all->color_f.b;
+	all->color_c.rgb = all->color_c.r * 65536
+		+ all->color_c.g * 256 + all->color_c.b;
 }

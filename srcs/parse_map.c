@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:22:40 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 02:21:34 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 16:11:30 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,19 +27,15 @@ void	ft_parse_map(t_all *all, char **line)
 {
 	static int		i = 0;
 	int				j;
-	int				len;
 	static int		numline = 0;
 
-	len = ft_strlen(*line);
-	if ((++numline > MAP_HEIGHT - 2) || (len > MAP_WIDTH - 2))
-	{
+	if ((++numline > MAP_HEIGHT - 2) || (ft_strlen(*line) > MAP_WIDTH - 2))
 		ft_put_error_and_exit("Map size limit is exceeded\n", all);
-	}
 	j = 0;
 	while ((*line)[j] != '\0')
 	{
-		if ((*line)[j] == 'N' || (*line)[j] == 'S' || (*line)[j] == 'W' 
-													|| (*line)[j] == 'E')
+		if ((*line)[j] == 'N' || (*line)[j] == 'S' || (*line)[j] == 'W'
+		|| (*line)[j] == 'E')
 			ft_set_start_point(all, line, &i, &j);
 		else if ((*line)[j] == '2')
 		{

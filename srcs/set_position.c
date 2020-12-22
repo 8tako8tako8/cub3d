@@ -12,16 +12,16 @@
 
 #include "cub3d.h"
 
-void	ft_set_dir(t_all *all, double dirX, double dirY)
+void	ft_set_dir(t_all *all, double dir_x, double dir_y)
 {
-	all->player.dir_x = dirX;
-	all->player.dir_y = dirY;
+	all->player.dir_x = dir_x;
+	all->player.dir_y = dir_y;
 }
 
-void	ft_set_plane(t_all *all, double planeX, double planeY)
+void	ft_set_plane(t_all *all, double plane_x, double plane_y)
 {
-	all->player.plane_x = planeX;
-	all->player.plane_y = planeY;
+	all->player.plane_x = plane_x;
+	all->player.plane_y = plane_y;
 }
 
 void	ft_set_pos_and_dir_and_plane(t_all *all)

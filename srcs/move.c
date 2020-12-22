@@ -14,42 +14,42 @@
 
 void	ft_move_forward(t_all *all)
 {
-	if (!all->map.map[(int)(all->player.pos_y)][(int)(all->player.pos_x 
-							+ all->player.dir_x * all->player.speed)])
+	if (!all->map.map[(int)(all->player.pos_y)][(int)(all->player.pos_x\
+	+ all->player.dir_x * all->player.speed)])
 		all->player.pos_x += all->player.dir_x * all->player.speed;
-	if (!all->map.map[(int)(all->player.pos_y 
-				+ all->player.dir_y * all->player.speed)][(int)(all->player.pos_x)])
+	if (!all->map.map[(int)(all->player.pos_y\
+	+ all->player.dir_y * all->player.speed)][(int)(all->player.pos_x)])
 		all->player.pos_y += all->player.dir_y * all->player.speed;
 }
 
 void	ft_move_backward(t_all *all)
 {
-	if (!all->map.map[(int)(all->player.pos_y)][(int)(all->player.pos_x 
-										- all->player.dir_x * all->player.speed)])
+	if (!all->map.map[(int)(all->player.pos_y)][(int)(all->player.pos_x
+	- all->player.dir_x * all->player.speed)])
 		all->player.pos_x -= all->player.dir_x * all->player.speed;
-	if (!all->map.map[(int)(all->player.pos_y 
-				- all->player.dir_y * all->player.speed)][(int)(all->player.pos_x)])
+	if (!all->map.map[(int)(all->player.pos_y
+	- all->player.dir_y * all->player.speed)][(int)(all->player.pos_x)])
 		all->player.pos_y -= all->player.dir_y * all->player.speed;
 }
 
 void	ft_move_left(t_all *all)
 {
-	if (!all->map.map[(int)(all->player.pos_y)][(int)(all->player.pos_x 
-									- all->player.plane_x * all->player.speed)])
+	if (!all->map.map[(int)(all->player.pos_y)][(int)(all->player.pos_x
+	- all->player.plane_x * all->player.speed)])
 		all->player.pos_x -= all->player.plane_x * all->player.speed;
-	if (!all->map.map[(int)(all->player.pos_y 
-			- all->player.plane_y * all->player.speed)][(int)(all->player.pos_x)])
-		all->player.pos_y -= all->player.plane_y * all->player.speed;	
+	if (!all->map.map[(int)(all->player.pos_y
+	- all->player.plane_y * all->player.speed)][(int)(all->player.pos_x)])
+		all->player.pos_y -= all->player.plane_y * all->player.speed;
 }
 
 void	ft_move_right(t_all *all)
 {
-	if (!all->map.map[(int)(all->player.pos_y)][(int)(all->player.pos_x 
-									+ all->player.plane_x * all->player.speed)])
+	if (!all->map.map[(int)(all->player.pos_y)][(int)(all->player.pos_x
+	+ all->player.plane_x * all->player.speed)])
 		all->player.pos_x += all->player.plane_x * all->player.speed;
-	if (!all->map.map[(int)(all->player.pos_y 
-			+ all->player.plane_y * all->player.speed)][(int)(all->player.pos_x)])
-		all->player.pos_y += all->player.plane_y * all->player.speed;	
+	if (!all->map.map[(int)(all->player.pos_y
+	+ all->player.plane_y * all->player.speed)][(int)(all->player.pos_x)])
+		all->player.pos_y += all->player.plane_y * all->player.speed;
 }
 
 void	ft_move_player(t_all *all)

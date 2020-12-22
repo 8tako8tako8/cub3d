@@ -62,7 +62,7 @@ void	ft_save_bmp(t_all *all)
 	int		fd;
 
 	filesize = 54 + (4 * all->win_r.x * all->win_r.y);
-	if ((fd = open("cub3d.bmp", O_WRONLY | O_CREAT 
+	if ((fd = open("cub3d.bmp", O_WRONLY | O_CREAT
 							| O_TRUNC | O_APPEND, S_IRWXU)) < 0)
 		ft_put_error_and_exit("Cannot create bmp\n", all);
 	ft_write_bmp_header(all, fd, filesize);

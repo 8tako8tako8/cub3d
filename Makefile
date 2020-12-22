@@ -6,7 +6,7 @@
 #    By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/12 13:07:44 by kmorimot          #+#    #+#              #
-#    Updated: 2020/12/22 02:26:57 by kmorimot         ###   ########.fr        #
+#    Updated: 2020/12/22 16:14:15 by kmorimot         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,6 +34,7 @@ SRCS := srcs/bmp.c \
 		srcs/utils.c \
 		srcs/utils2.c \
 		srcs/libft_ex.c \
+		srcs/libft_ex2.c \
 		srcs/wall_casting.c \
 		srcs/wall_casting2.c \
 		srcs/load_tex.c \

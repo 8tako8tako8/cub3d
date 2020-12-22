@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 02:15:48 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 02:17:18 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 16:05:12 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	ft_get_win(t_all *all, char **line)
 		i++;
 	if ((*line)[i] || all->win_r.x <= 0 || all->win_r.y <= 0)
 	{
-		ft_put_error_and_exit("Invalid R\n", all);		
+		ft_put_error_and_exit("Invalid R\n", all);
 	}
 }
 
@@ -64,8 +64,9 @@ void	ft_get_floor(t_all *all, char **line)
 	ft_skip_digit(line, &i, &count);
 	while ((*line)[i] == ' ')
 		i++;
-	if (count != 3 || (*line)[i] || all->color_f.r < 0 || all->color_f.g < 0 
-    || all->color_f.b < 0 || all->color_f.r > 255 || all->color_f.g > 255 || all->color_f.b > 255)
+	if (count != 3 || (*line)[i] || all->color_f.r < 0
+	|| all->color_f.g < 0 || all->color_f.b < 0 || all->color_f.r > 255
+	|| all->color_f.g > 255 || all->color_f.b > 255)
 		ft_put_error_and_exit("Invalid F\n", all);
 }
 
@@ -90,19 +91,21 @@ void	ft_get_ceiling(t_all *all, char **line)
 	ft_skip_digit(line, &i, &count);
 	while ((*line)[i] == ' ')
 		i++;
-	if (count != 3 || (*line)[i] || all->color_c.r < 0 || all->color_c.g < 0 || all->color_c.b < 0
-		|| all->color_c.r > 255 || all->color_c.g > 255 || all->color_c.b > 255)
+	if (count != 3 || (*line)[i] || all->color_c.r < 0
+	|| all->color_c.g < 0 || all->color_c.b < 0 || all->color_c.r > 255
+	|| all->color_c.g > 255 || all->color_c.b > 255)
 		ft_put_error_and_exit("Invalid C\n", all);
 }
 
 char	*ft_get_path(char **line, t_all *all)
 {
-	char		*path;
-	char		**tmp;
-	int			i;
+	char	*path;
+	char	**tmp;
+	int		i;
 
 	i = 2;
-	while ((('\t' <= (*line)[i]) && ((*line)[i] <= '\r')) || ((*line)[i] == ' '))
+	while ((('\t' <= (*line)[i]) && ((*line)[i] <= '\r'))
+	|| ((*line)[i] == ' '))
 		i++;
 	if (!((*line)[i]))
 		ft_put_error_and_exit("There is no PATH\n", all);
@@ -110,8 +113,6 @@ char	*ft_get_path(char **line, t_all *all)
 		ft_put_error_and_exit("Invalid PATH\n", all);
 	if (!(path = ft_strdup(tmp[1])) || !(path[0] == '.' && path[1] == '/'))
 	{
-		if (path)
-			free(path);
 		ft_free2(tmp);
 		ft_put_error_and_exit("Invalid PATH\n", all);
 	}

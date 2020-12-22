@@ -12,28 +12,28 @@
 
 #include "cub3d.h"
 
-double  	ft_decimals(double value)
+double		ft_decimals(double value)
 {
-    double  ret_decimals;
+	double	ret_decimals;
 
-    ret_decimals = value - (int)value;
-    return ret_decimals;
+	ret_decimals = value - (int)value;
+	return (ret_decimals);
 }
 
 double		ft_floor(double value)
 {
-    double  ret_int;
+	double	ret_int;
 
-    if (value < 0)
-    {
-        if (value < value - ft_decimals(value))
-            ret_int = value - ft_decimals(value) - 1;
-        else
-            ret_int = (int)value;
-    }
-    else
-        ret_int = (int)value;
-    return (ret_int);
+	if (value < 0)
+	{
+		if (value < value - ft_decimals(value))
+			ret_int = value - ft_decimals(value) - 1;
+		else
+			ret_int = (int)value;
+	}
+	else
+		ret_int = (int)value;
+	return (ret_int);
 }
 
 double		ft_absolute_value(double value)
@@ -45,8 +45,8 @@ double		ft_absolute_value(double value)
 
 void		ft_free2(char **dst)
 {
-	int		i;
-	int		num;
+	int	i;
+	int	num;
 
 	if (dst == NULL)
 		return ;

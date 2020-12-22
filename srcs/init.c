@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:15:31 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 01:08:30 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 19:59:29 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,13 +41,11 @@ void	ft_init_all(t_all *all, int argc)
 	all->sprlst = NULL;
 	all->win_r.x = 0;
 	all->win_r.y = 0;
-	all->win_r.buf = NULL;
 	all->start_point.flag = 0;
 	all->img.img = NULL;
 	all->mlx.mlx = NULL;
-	all->mlx.texture = NULL;
-	all->player.speed = 0.01;
-	all->player.rotspeed = 0.01;
+	all->player.speed = 0.005;
+	all->player.rotspeed = 0.005;
 }
 
 void	ft_init_key_and_path(t_all *all)
@@ -68,7 +66,7 @@ void	ft_init_key_and_path(t_all *all)
 
 void	ft_init_map(t_all *all)
 {
-    int		i;
+	int		i;
 	int		j;
 
 	i = 0;
@@ -80,7 +78,7 @@ void	ft_init_map(t_all *all)
 			if (i == 0 || i == MAP_HEIGHT - 1 || j == 0 || j == MAP_WIDTH - 1)
 				all->map.charmap[i][j] = 'x';
 			else
-				all->map.charmap[i][j] = '4';			
+				all->map.charmap[i][j] = '4';
 			j++;
 		}
 		i++;

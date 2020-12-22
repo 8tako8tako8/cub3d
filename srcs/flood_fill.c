@@ -43,13 +43,12 @@ void	ft_flood_fill_recursion(t_all *all, int x, int y)
 		return ;
 	if (all->map.charmap[y][x] == ' ')
 		ft_put_error_and_exit("There is space in the walking range\n", all);
-	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' 
-										&& all->map.charmap[y][x] != '1' 
-	&& all->map.charmap[y][x] != '2' && all->map.charmap[y][x] != 'o' 
-										&& all->map.charmap[y][x] != '@')
+	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n'
+	&& all->map.charmap[y][x] != '1' && all->map.charmap[y][x] != '2'
+	&& all->map.charmap[y][x] != 'o' && all->map.charmap[y][x] != '@')
 		ft_put_error_and_exit("Map is not closed\n", all);
-	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n' 
-										&& all->map.charmap[y][x] != '2')
+	if (all->map.charmap[y][x] != '0' && all->map.charmap[y][x] != 'n'
+	&& all->map.charmap[y][x] != '2')
 		return ;
 	if (all->map.charmap[y][x] == '2')
 		all->map.charmap[y][x] = '@';

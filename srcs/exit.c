@@ -33,13 +33,13 @@ void	ft_free_path(t_all *all)
 		free(all->path_tex.sprite);
 }
 
-int	ft_exit(t_all *all)
+int		ft_exit(t_all *all)
 {
 	ft_free_path(all);
 	if (all->cubflag.mlx_start == 1)
 	{
 		if (all->img.img)
-		mlx_destroy_image(all->mlx.mlx, all->img.img);
+			mlx_destroy_image(all->mlx.mlx, all->img.img);
 		if (all->mlx.mlx)
 		{
 			mlx_destroy_display(all->mlx.mlx);
