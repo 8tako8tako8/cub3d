@@ -1,10 +1,10 @@
-R 10000 10000000
+R 300 300
 NO ./textures/summer.xpm
 SO ./textures/winter.xpm
 WE ./textures/spring.xpm
 EA ./textures/autumn.xpm
 
-S ./textures/oldcry2.xpm
+S ./textures/oldcry.xpm
 F 255,255,255
 C 200,255,255
 
@@ -12,7 +12,7 @@ C 200,255,255
 10000001
 10000001
 10000001
-1000N001
+1000W001
 10000001
 10000001
 11111111

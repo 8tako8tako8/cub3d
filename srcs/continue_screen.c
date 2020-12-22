@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:17:48 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 21:18:52 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/23 00:21:52 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ void	ft_draw_window(t_all *all)
 		x = 0;
 		while (x < all->win_r.x)
 		{
-			all->img.data[all->img.size_l / 4 * y + x] = all->win_r.buf[y][x];
+			all->img.data[(all->img.size_l / (all->img.bpp / 8)) * y + x] =\
+													all->win_r.buf[y][x];
 			x++;
 		}
 		y++;

@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 12:23:21 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 19:58:35 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 22:29:30 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 # include <unistd.h>
 # include <stdlib.h>
 # include <string.h>
+# include <stdio.h>
 # include <math.h>
 # define MAP_WIDTH 50
 # define MAP_HEIGHT 50

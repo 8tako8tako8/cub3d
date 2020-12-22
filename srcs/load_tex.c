@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:18:33 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 21:21:32 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/23 00:17:27 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	ft_load_image2(t_all *all, int i)
 		while (x < all->img.img_width)
 		{
 			all->mlx.texture[i][all->img.img_width * y + x] =\
-				all->img.data[all->img.size_l / 4 * y + x];
+				all->img.data[(all->img.size_l / (all->img.bpp / 8)) * y + x];
 			x++;
 		}
 		y++;
