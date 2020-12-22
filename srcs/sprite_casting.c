@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:32:08 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 19:56:47 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:24:06 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_calc_sprite_tex2(t_all *all, int *x)
 {

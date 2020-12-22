@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/21 16:52:13 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/11/15 20:51:15 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:20:09 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../includes/cub3d.h"
 
 void		ft_strlcpy2(char *dst, const char *src, size_t dstsize)
 {

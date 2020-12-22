@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 02:15:48 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 16:05:12 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:22:45 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_skip_digit(char **line, int *i, int *count)
 {

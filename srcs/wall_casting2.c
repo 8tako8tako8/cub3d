@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 02:26:22 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 02:26:47 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:24:47 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_calc_wall_tex(t_all *all, int *x)
 {

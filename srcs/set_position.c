@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:20:41 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/21 21:35:23 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:23:57 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_set_dir(t_all *all, double dir_x, double dir_y)
 {

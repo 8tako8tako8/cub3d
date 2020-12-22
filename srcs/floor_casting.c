@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:20:08 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/21 21:33:12 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:19:55 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_floor_casting(t_all *all)
 {

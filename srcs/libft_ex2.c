@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:37:47 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 16:14:03 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:21:19 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 static int	check_int_overflow(int sign, const char *str)
 {

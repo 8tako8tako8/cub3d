@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:15:50 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 02:23:12 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:24:14 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 double		ft_decimals(double value)
 {

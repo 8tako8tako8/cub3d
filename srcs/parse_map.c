@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:22:40 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 16:11:30 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:23:48 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_set_start_point(t_all *all, char **line, int *i, int *j)
 {

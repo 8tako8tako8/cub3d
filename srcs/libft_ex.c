@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:37:47 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 16:13:39 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:21:02 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void		ft_lstclear_ex(t_sprlst **lst)
 {

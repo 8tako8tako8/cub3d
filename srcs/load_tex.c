@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:18:33 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 17:01:53 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:21:32 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_load_image2(t_all *all, int i)
 {

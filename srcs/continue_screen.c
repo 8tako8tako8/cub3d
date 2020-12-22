@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:17:48 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/21 21:27:58 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:18:52 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_draw_window(t_all *all)
 {

@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:22:27 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 02:21:00 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:23:18 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 int		ft_check_after_map(char *line)
 {

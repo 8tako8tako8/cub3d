@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:17:18 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 02:04:08 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:20:30 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 void	ft_init_buf_and_tex(t_all *all)
 {

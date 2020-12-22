@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:16:21 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 01:37:58 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:24:24 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 int		ft_min(int x, int y)
 {

@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/17 20:56:16 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/16 21:48:08 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:20:17 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "../includes/cub3d.h"
 
 int		ft_read_error(char **line, char **save, int fd)
 {

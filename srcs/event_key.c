@@ -6,11 +6,11 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:21:13 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/21 21:34:45 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/22 21:19:15 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "cub3d.h"
+#include "../includes/cub3d.h"
 
 int		ft_press_key(int key, t_all *all)
 {

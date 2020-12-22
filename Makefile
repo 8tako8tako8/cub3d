@@ -6,14 +6,13 @@
 #    By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/12 13:07:44 by kmorimot          #+#    #+#              #
-#    Updated: 2020/12/22 16:14:15 by kmorimot         ###   ########.fr        #
+#    Updated: 2020/12/22 21:28:07 by kmorimot         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := cub3D
 CC := gcc
 CFLAGS := -Wall -Wextra -Werror -g
-#CFLAGS := -g -fsanitize=leak -fsanitize=address
 LIBS := -lXext -lX11
 MLX_DIR := ./minilibx-linux
 LIBFT_DIR := ./libft
