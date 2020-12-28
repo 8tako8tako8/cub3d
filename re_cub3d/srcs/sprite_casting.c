@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:32:08 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 21:24:06 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/28 18:51:44 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,13 @@ void	ft_calc_sprite_tex2(t_all *all, int *x)
 				- all->win_r.y * 128 + all->spr.spr_height * 128;
 		all->spr.tex_y = ((all->spr.d * all->img.tex_height[4])
 						/ all->spr.spr_height) / 256;
-		all->spr.color = all->mlx.texture[4][all->img.tex_width[4]
-						* all->spr.tex_y + all->spr.tex_x];
+		if ((0 <= (all->img.tex_width[4] * all->spr.tex_y + all->spr.tex_x))
+		&& ((all->img.tex_width[4] * all->spr.tex_y + all->spr.tex_x)
+		< (all->img.tex_width[4] * all->img.tex_height[4])))
+			all->spr.color = all->mlx.texture[4][all->img.tex_width[4]
+							* all->spr.tex_y + all->spr.tex_x];
+		else
+			all->spr.color = 0x000000;
 		if ((all->spr.color & 0xFFFFFF) != 0)
 			all->win_r.buf[y][*x] = all->spr.color;
 		y++;

@@ -6,13 +6,13 @@
 #    By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/12 13:07:44 by kmorimot          #+#    #+#              #
-#    Updated: 2020/12/28 15:09:31 by kmorimot         ###   ########.fr        #
+#    Updated: 2020/12/28 19:04:21 by kmorimot         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME := cub3D
 CC := gcc
-CFLAGS := -Wall -Wextra -Werror -g
+CFLAGS := -Wall -Wextra -Werror
 #CFLAGS := -g -fsanitize=address
 LIBS := -lXext -lX11
 MLX_DIR := ./minilibx-linux

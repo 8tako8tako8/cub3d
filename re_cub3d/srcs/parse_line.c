@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:22:27 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/28 15:22:53 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/28 17:48:21 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,14 +83,18 @@ void	ft_parse_line_elem(t_all *all, char **line)
 void	ft_parse_line(t_all *all, char **line)
 {
 	ft_parse_line_elem(all, line);
-	if (all->flag.eflag == 0 && ft_ismap(all, *line))
-		ft_check_element_and_parse_map(all, line);
-	else if (all->flag.eflag == 0 && all->map.start == 1 && all->map.end == 0)
-		all->map.end = 1;
-	else if (all->flag.eflag == 0 && all->map.start == 1 && all->map.end == 1
-	&& ft_check_after_map(*line) == -1)
-		ft_put_error_and_exit("Map is not at the end\n", all);
-	else if (all->flag.eflag == 0 && !ft_isonlyspace(line))
-		ft_put_error_and_exit("Neither element nor map\n", all);
+	if (all->flag.eflag == 0)
+	{
+		if (ft_ismap(all, *line))
+			ft_check_element_and_parse_map(all, line);
+		else if (all->map.start == 1 && (all->map.end == 0
+		&& ft_isonlyspace(line)))
+			all->map.end = 1;
+		else if (all->map.start == 1 && all->map.end == 1
+		&& ft_check_after_map(*line) == -1)
+			ft_put_error_and_exit("Map is not at the end\n", all);
+		else if (!ft_isonlyspace(line))
+			ft_put_error_and_exit("Neither element nor map\n", all);
+	}
 	all->flag.eflag = 0;
 }
