@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 12:23:21 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 22:29:30 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/23 17:09:50 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,9 +98,62 @@ typedef struct		s_img
 	int				endian;
 	int				img_width;
 	int				img_height;
-	int				tex_width[5];
-	int				tex_height[5];
 }					t_img;
+
+typedef struct		s_no_img
+{
+	void			*img;
+	int				*data;
+	int				size_l;
+	int				bpp;
+	int				endian;
+	int				img_width;
+	int				img_height;
+}					t_no_img;
+
+typedef struct		s_so_img
+{
+	void			*img;
+	int				*data;
+	int				size_l;
+	int				bpp;
+	int				endian;
+	int				img_width;
+	int				img_height;
+}					t_so_img;
+
+typedef struct		s_we_img
+{
+	void			*img;
+	int				*data;
+	int				size_l;
+	int				bpp;
+	int				endian;
+	int				img_width;
+	int				img_height;
+}					t_we_img;
+
+typedef struct		s_ea_img
+{
+	void			*img;
+	int				*data;
+	int				size_l;
+	int				bpp;
+	int				endian;
+	int				img_width;
+	int				img_height;
+}					t_ea_img;
+
+typedef struct		s_s_img
+{
+	void			*img;
+	int				*data;
+	int				size_l;
+	int				bpp;
+	int				endian;
+	int				img_width;
+	int				img_height;
+}					t_s_img;
 
 typedef struct		s_player
 {
@@ -118,7 +171,6 @@ typedef struct		s_mlx
 {
 	void			*mlx;
 	void			*win;
-	int				**texture;
 }					t_mlx;
 
 typedef struct		s_key
@@ -208,6 +260,11 @@ typedef struct		s_all
 	t_map			map;
 	t_start_point	start_point;
 	t_img			img;
+	t_no_img		no_img;
+	t_so_img		so_img;
+	t_we_img		we_img;
+	t_ea_img		ea_img;
+	t_s_img			s_img;
 	t_player		player;
 	t_mlx			mlx;
 	t_key			key;
@@ -254,8 +311,8 @@ void				ft_move_backward(t_all *all);
 void				ft_move_left(t_all *all);
 void				ft_move_right(t_all *all);
 void				ft_move_player(t_all *all);
-void				ft_load_image(t_all *all, char *path);
-void				ft_load_image2(t_all *all, int i);
+//void				ft_load_image(t_all *all, char *path);
+//void				ft_load_image2(t_all *all, int i);
 void				ft_load_texture(t_all *all);
 void				ft_draw_window_save(t_all *all);
 void				ft_write_bmp_header(t_all *all, int fd, int filesize);

@@ -1,0 +1,16 @@
+R 300 300
+NO ./textures/bard.xpm
+SO ./textures/winter.xpm
+WE ./textures/spring.xpm
+EA ./textures/autumn.xpm
+
+S ./textures/oldcry.xpm
+F 255,255,255
+C 200,255,255
+
+11111111111111111
+1N00000101
+10000001
+10000001
+11111111111111111
+   

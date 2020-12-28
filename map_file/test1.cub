@@ -1,5 +1,5 @@
 R 300 300
-NO ./textures/summer.xpm
+NO ./textures/2.xpm
 SO ./textures/winter.xpm
 WE ./textures/spring.xpm
 EA ./textures/autumn.xpm
@@ -12,7 +12,7 @@ C 200,255,255
 10000001
 10000001
 10000001
-1000W001
+1000N001
 10000001
 10000001
 11111111

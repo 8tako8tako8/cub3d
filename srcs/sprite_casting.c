@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:32:08 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 21:24:06 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/23 17:04:12 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,9 +21,9 @@ void	ft_calc_sprite_tex2(t_all *all, int *x)
 	{
 		all->spr.d = y * 256
 				- all->win_r.y * 128 + all->spr.spr_height * 128;
-		all->spr.tex_y = ((all->spr.d * all->img.tex_height[4])
+		all->spr.tex_y = ((all->spr.d * all->s_img.img_height)
 						/ all->spr.spr_height) / 256;
-		all->spr.color = all->mlx.texture[4][all->img.tex_width[4]
+		all->spr.color = all->s_img.data[all->s_img.img_width
 						* all->spr.tex_y + all->spr.tex_x];
 		if ((all->spr.color & 0xFFFFFF) != 0)
 			all->win_r.buf[y][*x] = all->spr.color;
@@ -39,7 +39,7 @@ void	ft_calc_sprite_tex(t_all *all)
 	while (x < all->spr.draw_end_x)
 	{
 		all->spr.tex_x = (int)((256 * (x - (-all->spr.spr_width / 2
-			+ all->spr.spr_screen_x)) * all->img.tex_width[4]
+			+ all->spr.spr_screen_x)) * all->s_img.img_width
 			/ all->spr.spr_width) / 256);
 		if (all->spr.transform_y > 0 && x > 0 && x < all->win_r.x
 		&& all->spr.transform_y < all->spr.zbuffer[x])

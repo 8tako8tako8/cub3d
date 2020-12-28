@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:16:49 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 21:19:31 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/23 16:41:14 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ int		ft_exit(t_all *all)
 		}
 		ft_lstclear_ex(&(all->sprlst));
 		ft_free(all->win_r.buf, all->win_r.y);
-		ft_free(all->mlx.texture, 5);
+//		ft_free(all->mlx.texture, 5);
 		if (all->spr.sprite_x)
 			free(all->spr.sprite_x);
 		if (all->spr.sprite_y)

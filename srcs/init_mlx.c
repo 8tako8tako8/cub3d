@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:17:18 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/22 21:20:30 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/23 18:15:49 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,8 +25,8 @@ void	ft_init_buf_and_tex(t_all *all)
 			all->win_r.buf[i][j++] = 0;
 		i++;
 	}
-	if (!(all->mlx.texture = (int **)malloc(sizeof(int *) * 5)))
-		ft_put_error_and_exit("Cannot allocate memory\n", all);
+/* 	if (!(all->mlx.texture = (int **)malloc(sizeof(int *) * 5)))
+		ft_put_error_and_exit("Cannot allocate memory\n", all); */
 }
 
 void	ft_init_buf_and_zbuffer(t_all *all)
