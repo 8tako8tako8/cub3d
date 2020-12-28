@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/19 17:50:57 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/23 00:12:31 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/28 21:25:34 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,5 +68,5 @@ int		main(int argc, char **argv)
 		mlx_hook(all.mlx.win, 17, 1L << 17, &ft_exit, &all);
 		mlx_loop(all.mlx.mlx);
 	}
-	ft_put_error_and_exit("Invalid comandline arguments\n", &all);
+	ft_putstr_fd("Invalid comandline arguments\n", 2);
 }
