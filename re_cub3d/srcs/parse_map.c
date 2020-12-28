@@ -39,7 +39,8 @@ void	ft_parse_map(t_all *all, char **line)
 			ft_set_start_point(all, line, &i, &j);
 		else if ((*line)[j] == '2')
 		{
-			ft_lstadd_back_ex(&(all->sprlst), ft_newspr(j + 1.5, MAP_HEIGHT - i - 1.5));
+			ft_lstadd_back_ex(&(all->sprlst),
+				ft_newspr(j + 1.5, MAP_HEIGHT - i - 1.5));
 			all->map.charmap[i + 1][j + 1] = (*line)[j];
 		}
 		else if ((*line)[j] == '0' || (*line)[j] == '1' || (*line)[j] == ' ')

@@ -14,22 +14,21 @@
 
 void	ft_reverse_map_to_y(t_all *all)
 {
-	int     i;
-    int     j;
+	int	i;
+	int	j;
 
-    i = 0;
-    while (i < MAP_HEIGHT)
-    {
-        j = 0;
-        while (j < MAP_WIDTH)
-        {
-            all->map.map[i][j] = all->map.r_map[MAP_HEIGHT - i - 1][j];
-            j++;
-        }
-        i++;
-    }
+	i = 0;
+	while (i < MAP_HEIGHT)
+	{
+		j = 0;
+		while (j < MAP_WIDTH)
+		{
+			all->map.map[i][j] = all->map.r_map[MAP_HEIGHT - i - 1][j];
+			j++;
+		}
+		i++;
+	}
 	all->start_point.y = MAP_HEIGHT - all->start_point.y;
-
 }
 
 void	ft_convert_map_char_to_int(t_all *all)

@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:15:31 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/28 12:10:11 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/28 14:40:45 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,6 @@ void	ft_init_all(t_all *all, int argc)
 	all->start_point.flag = 0;
 	all->img.img = NULL;
 	all->mlx.mlx = NULL;
-	all->player.speed = 0.005;
-	all->player.rotspeed = 0.005;
 }
 
 void	ft_init_key_and_path(t_all *all)

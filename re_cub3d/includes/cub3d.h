@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 12:23:21 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/28 12:48:42 by kmorimot         ###   ########.fr       */
+/*   Updated: 2020/12/28 15:26:09 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,7 +301,9 @@ void				ft_parse_line_c(t_all *all, char **line, int *i);
 void				ft_set_start_point(t_all *all, char **line, int *i, int *j);
 void				ft_parse_map(t_all *all, char **line);
 int					ft_ismap(t_all *all, char *line);
-int					ft_check_last(char *line);
+void				ft_parse_line_elem(t_all *all, char **line);
+int					ft_check_null_and_space(char **line, int *i);
+int					ft_check_after_map(char *line);
 void				ft_check_element_and_parse_map(t_all *all, char **line);
 void				ft_parse_line(t_all *all, char **line);
 void				ft_read_cub(t_all *all, int fd);
