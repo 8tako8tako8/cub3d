@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:20:41 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/28 14:41:04 by kmorimot         ###   ########.fr       */
+/*   Updated: 2021/03/16 02:35:59 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,8 @@ void	ft_set_plane(t_all *all, double plane_x, double plane_y)
 
 void	ft_set_pos_and_dir_and_plane(t_all *all)
 {
-	all->player.speed = 0.005;
-	all->player.rotspeed = 0.005;
+	all->player.speed = 0.05;
+	all->player.rotspeed = 0.05;
 	all->player.pos_x = all->start_point.x;
 	all->player.pos_y = all->start_point.y;
 	if (all->start_point.dir == 'N')

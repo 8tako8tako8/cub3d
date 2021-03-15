@@ -6,7 +6,7 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/21 21:16:49 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/28 02:37:05 by kmorimot         ###   ########.fr       */
+/*   Updated: 2021/03/16 02:23:07 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int		ft_exit(t_all *all)
 			mlx_destroy_image(all->mlx.mlx, all->img.img);
 		if (all->mlx.mlx)
 		{
-			mlx_destroy_display(all->mlx.mlx);
+			//mlx_destroy_display(all->mlx.mlx);
 			free(all->mlx.mlx);
 		}
 		ft_lstclear_ex(&(all->sprlst));

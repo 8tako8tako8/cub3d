@@ -6,17 +6,17 @@
 /*   By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/22 12:23:21 by kmorimot          #+#    #+#             */
-/*   Updated: 2020/12/28 17:24:57 by kmorimot         ###   ########.fr       */
+/*   Updated: 2021/03/16 02:34:21 by kmorimot         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CUB3D_H
 # define CUB3D_H
 
-# include "../minilibx-linux/mlx.h"
-# include "key_linux.h"
+# include "mlx.h"
+# include "key.h"
 # include "get_next_line.h"
-# include "../libft/libft.h"
+# include "libft.h"
 # include <fcntl.h>
 # include <unistd.h>
 # include <stdlib.h>

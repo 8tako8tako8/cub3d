@@ -6,71 +6,82 @@
 #    By: kmorimot <kmorimot@student.42tokyo.jp>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2020/10/12 13:07:44 by kmorimot          #+#    #+#              #
-#    Updated: 2020/12/28 19:04:21 by kmorimot         ###   ########.fr        #
+#    Updated: 2021/03/16 02:21:24 by kmorimot         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME := cub3D
-CC := gcc
-CFLAGS := -Wall -Wextra -Werror
-#CFLAGS := -g -fsanitize=address
-LIBS := -lXext -lX11
-MLX_DIR := ./minilibx-linux
-LIBFT_DIR := ./libft
-SRCS := srcs/bmp.c \
-		srcs/exit.c \
-		srcs/move.c \
-		srcs/move2.c \
-		srcs/continue_screen.c \
-		srcs/flood_fill.c \
-		srcs/init.c \
-		srcs/parse_element.c \
-		srcs/parse_element2.c \
-		srcs/parse_element_content.c \
-		srcs/sprite_casting.c \
-		srcs/floor_casting.c \
-		srcs/init_mlx.c \
-		srcs/parse_map.c \
-		srcs/utils.c \
-		srcs/utils2.c \
-		srcs/libft_ex.c \
-		srcs/libft_ex2.c \
-		srcs/wall_casting.c \
-		srcs/wall_casting2.c \
-		srcs/load_tex.c \
-		srcs/parse_line.c \
-		srcs/event_key.c \
-		srcs/merge_sort.c \
-		srcs/set_position.c \
-		srcs/cub3d.c \
-		srcs/get_next_line.c \
-		srcs/get_next_line_utils.c
+CC		:=	gcc
+CFLAGS	:=	-Wall -Wextra -Werror
+NAME	:=	cub3D
+UNAME	:=	$(shell uname)
+SRC_DIR	:=	./srcs
+FT_DIR	:=	$(SRC_DIR)/libft
+FT_LIB	:=	ft
 
+ifeq	($(UNAME), Darwin)
+MLX_DIR :=	$(SRC_DIR)/minilibx_mms_20200219
+MLX_LIB :=	libmlx.dylib
+LIBS    :=  -L$(MLX_DIR) -lmlx -framework OpenGL -framework AppKit -L$(FT_DIR) -l$(FT_LIB)
+else
+ifeq	($(UNAME), Linux)
+MLX_DIR :=	$(SRC_DIR)/minilibx-linux
+MLX_LIB :=	libmlx_Linux.a
+LIBS    :=	-L. -lmlx_Linux -lXext -lX11 -lm -L$(FT_DIR) -l$(FT_LIB)
+endif
+endif
+
+SRCS := $(SRC_DIR)/bmp.c \
+		$(SRC_DIR)/exit.c \
+		$(SRC_DIR)/move.c \
+		$(SRC_DIR)/move2.c \
+		$(SRC_DIR)/continue_screen.c \
+		$(SRC_DIR)/flood_fill.c \
+		$(SRC_DIR)/init.c \
+		$(SRC_DIR)/parse_element.c \
+		$(SRC_DIR)/parse_element2.c \
+		$(SRC_DIR)/parse_element_content.c \
+		$(SRC_DIR)/sprite_casting.c \
+		$(SRC_DIR)/floor_casting.c \
+		$(SRC_DIR)/init_mlx.c \
+		$(SRC_DIR)/parse_map.c \
+		$(SRC_DIR)/utils.c \
+		$(SRC_DIR)/utils2.c \
+		$(SRC_DIR)/libft_ex.c \
+		$(SRC_DIR)/libft_ex2.c \
+		$(SRC_DIR)/wall_casting.c \
+		$(SRC_DIR)/wall_casting2.c \
+		$(SRC_DIR)/load_tex.c \
+		$(SRC_DIR)/parse_line.c \
+		$(SRC_DIR)/event_key.c \
+		$(SRC_DIR)/merge_sort.c \
+		$(SRC_DIR)/set_position.c \
+		$(SRC_DIR)/cub3d.c \
+		$(SRC_DIR)/get_next_line.c \
+		$(SRC_DIR)/get_next_line_utils.c
+
+INCLUDE :=  -I$(FT_DIR) -I$(MLX_DIR) -I./includes
 OBJS := $(SRCS:.c=.o)
-INCLUDE := -I.srcs
-RM := rm -f
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(MAKE) -C $(LIBFT_DIR)
+	$(MAKE) bonus -C $(FT_DIR)
 	$(MAKE) -C $(MLX_DIR)
-	cp $(MLX_DIR)/libmlx_Linux.a .
-	$(CC) $(CFLAGS) $(OBJS) -L. -L.minilibx-linux -lmlx_Linux $(LIBS) -lm ./libft/libft.a -o $(NAME)
+	cp $(MLX_DIR)/$(MLX_LIB) .
+	$(CC) $(CFLAGS) -o $(NAME) $(INCLUDE) $(SRCS) $(LIBS)
 
 .c.o:
 	$(CC) $(CFLAGS) $(INCLUDE) -c -o $@ $<
 
 clean:
 	$(RM) $(OBJS)
-	$(MAKE) -C $(LIBFT_DIR) clean
+	$(MAKE) -C $(FT_DIR) clean
 	$(MAKE) -C $(MLX_DIR) clean
 
 fclean: clean
-	$(RM) $(NAME) ./libmlx_Linux.a ./cub3d.bmp
-	$(MAKE) -C $(LIBFT_DIR) fclean
-	$(MAKE) -C $(MLX_DIR) clean
+	$(RM) $(NAME) $(MLX_LIB) ./cub3d.bmp 
+	$(MAKE) -C $(FT_DIR) fclean
 
 re: fclean all
 
-.PHONY: all clean fclean re
+.PHONY:	all clean fclean re bonus
