@@ -22,6 +22,14 @@ make
 ```
 ./cub3D map_file/meiro.cub --save
 ```
+移動方法
+(W): 前進
+(S): 後退
+(A): 左回転
+(D): 右回転
+(←): 左横移動
+(→): 右横移動
+(Esc): 終了
 
 ## About debug
 略
