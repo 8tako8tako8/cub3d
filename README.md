@@ -32,7 +32,7 @@ make re
 (Esc): 終了
 
 樽を見つけるゲーム(樽を見つけてもゲームは終了しません。)
-![gif](https://github.com/8tako8tako8/cub3d/tree/master/image/meiro.gif)
+![gif](https://user-images.githubusercontent.com/65395999/114263289-92a6ca00-9a1f-11eb-8174-d82bcb5a1e98.gif)
 
 ## About debug
 略
