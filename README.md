@@ -15,7 +15,7 @@ or
 ```
 git clone ...
 cd cub3d
-make
+make re
 ./cub3D map_file/meiro.cub
 ```
 スタートポジションのbmp作成
@@ -30,6 +30,9 @@ make
 (←): 左横移動
 (→): 右横移動
 (Esc): 終了
+
+樽を見つけるゲーム(樽を見つけてもゲームは終了しません。)
+![gif](https://github.com/8tako8tako8/cub3d/tree/master/image)
 
 ## About debug
 略
