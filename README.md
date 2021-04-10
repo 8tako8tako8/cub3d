@@ -32,6 +32,7 @@ make re
 (Esc): 終了
 
 <li>樽を見つけるゲーム(樽を見つけてもゲームは終了しません。)</li>
+
 ![meiro](https://raw.github.com/wiki/8tako8tako8/cub3d/image/meiro.gif)
 
 ## About debug
