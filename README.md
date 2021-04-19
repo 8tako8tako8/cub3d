@@ -8,7 +8,7 @@ map内にある樽を見つける。
 
 ## Requirement
 - mac Catalina 10.15.7
-or
+<li>or</li>
 - XUbuntu 18.04.5
 
 ## Usage
