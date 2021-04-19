@@ -22,7 +22,17 @@ make re
 ```
 ./cub3D map_file/meiro.cub --save
 ```
-移動方法
+### map_fileについて
+R 500 400 <- ウィンドウの大きさを指定
+NO ./textures/eagle.xpm <- 北側のテクスチャを指定
+SO ./textures/greystone.xpm <- 南側のテクスチャを指定
+WE ./textures/redbrick.xpm <- 西側のテクスチャを指定
+EA ./textures/purplestone.xpm <- 東側のテクスチャを指定
+S ./textures/barrel.xpm <- スプライトのテクスチャを指定
+F 255,255,255 <-床の色をRGB(0~255)で指定
+C 30,30,255　<-天井の色をRGB(0~255)で指定
+
+### 移動方法
 (W): 前進
 (S): 後退
 (A): 左回転
